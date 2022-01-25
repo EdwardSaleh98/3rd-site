@@ -1,0 +1,5 @@
+--- 
+ansible_host: 10.22.1.121
+
+host_name: SHEIR01
+

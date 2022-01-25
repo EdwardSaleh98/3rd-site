@@ -1,0 +1,10 @@
+- name: Generate some config
+  template:
+    src: "LAR/{{ item.value }}.j2"
+    dest: "{{ role_path }}/config/{{ inventory_hostname }}/{{ item.key }}_{{ item.value }}.txt"
+  with_dict:
+    1: vrf
+    2: interface
+    3: prefix
+    4: bgp 
+    5: route_policy

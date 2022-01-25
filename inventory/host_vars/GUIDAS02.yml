@@ -1,0 +1,5 @@
+--- 
+ansible_host: 10.44.152.65
+
+host_name: GUIDAS02
+

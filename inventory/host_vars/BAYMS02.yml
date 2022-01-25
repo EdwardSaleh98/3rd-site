@@ -1,0 +1,5 @@
+--- 
+ansible_host: 10.22.0.94
+
+host_name: BAYMS02
+

@@ -1,0 +1,77 @@
+---
+sites:
+
+  SBK:
+
+    asn: 65213
+
+    l2tp_password: fUY78aoqpc93nu8q
+    md5_password: gXr8q6FXwrbbknyr
+    bgp_password: qwsdcfgvtszdeftg
+
+    SBKELN02:
+      l2tp:
+        interfaces:
+          lo1:
+            ip: 213.120.163.180/32
+          lo2:
+            ip: 213.120.163.181/32
+          lo11:
+            ip: 192.168.100.22/32
+
+          po63.632:
+            ip: 217.32.240.65/31
+            b_end: SBKLAR01
+          po64.632:
+            ip: 217.32.240.67/31
+            b_end: SBKLAR02
+
+          hu0/0/0:
+            channel_grp: 63
+            b_end: SBKLAR01
+          hu1/0/0:
+            channel_grp: 64
+            b_end: SBKLAR02
+
+        bgp:
+          router_id: 217.32.240.65/31
+          SBKLAR01:
+            ip: 192.168.100.3
+            
+          SBKLAR02:
+            ip: 192.168.100.6
+
+    
+    SBKELN03:
+      l2tp:
+        interfaces:
+          lo1:
+            ip: 213.120.163.182/32
+          lo2:
+            ip: 213.120.163.183/32
+          lo11:
+            ip: 192.168.100.23/32
+          
+          po53.533:
+            ip: 217.32.240.69/31
+            b_end: SBKLAR01
+          po54.633:
+            ip: 217.32.240.71/31
+            b_end: SBKLAR02
+          
+          hu0/0/0:
+            channel_grp: 53
+            b_end: SBKLAR01
+          hu1/0/0:
+            channel_grp: 54
+            b_end: SBKLAR02
+         
+
+        bgp:
+          router_id : 213.120.163.182/32
+          SBKLAR01:
+            ip: 192.168.100.3
+
+          SBKLAR02:
+            ip: 192.168.100.6
+

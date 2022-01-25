@@ -1,0 +1,5 @@
+--- 
+ansible_host: 10.41.3.82
+
+host_name: SBKLNS01
+

@@ -1,0 +1,5 @@
+--- 
+ansible_host: 10.22.1.254
+
+host_name: SHEDS02
+

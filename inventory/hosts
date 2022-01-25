@@ -1,0 +1,567 @@
+---
+##### Defining all the groups
+all:
+  children:
+    local:
+      hosts:
+        localhost:
+          ansible_connection: local
+
+
+################ RSN ################
+    RSN:
+      children:
+
+        COLRSN:
+          children:
+            COLLAR:
+            COLSAR:
+            COLLNS:
+            COLELN:
+            COLDAS:
+            COLIDM:
+            COLANA:
+
+        FARRSN:
+          children:
+            FARLAR:
+            FARSAR:
+            FARLNS:
+            FARELN:
+            FARDAS:
+            FARIDM:
+            FARANA:
+
+        SBKRSN:
+          children:
+            SBKLAR:
+            SBKSAR:
+            SBKLNS:
+            SBKELN:
+            SBKDAS:
+            SBKIDM:
+            SBKANA:
+
+        GUIRSN:
+          children:
+            GUIDAS:
+
+# OS Groups
+        IOSXR:
+          children:
+            LAR:
+            SAR:
+
+        IOSXE:
+          children:
+            ELN:
+            LNS:
+
+        NXOS:
+          children:
+            DAS:
+            IDM:
+
+
+# Device Groups
+        SAR:
+          children:
+            COLSAR:
+            FARSAR:
+            SBKSAR:
+
+        LAR:
+          children:
+            COLLAR:
+            FARLAR:
+            SBKLAR:
+
+        ELN:
+          children:
+            COLELN:
+            FARELN:
+            SBKELN:
+
+        LNS:
+          children:
+            COLLNS:
+            FARLNS:
+            SBKLNS:
+
+        DAS:
+          children:
+            COLDAS:
+            FARDAS:
+            SBKDAS:
+            GUIDAS:
+
+        IDM:
+          children:
+            COLIDM:
+            FARIDM:
+            SBKIDM:
+
+        ANA:
+          children:
+            COLANA:
+            FARANA:
+            SBKANA:
+
+##### This is where we define hostnames
+
+# SAR
+        COLSAR:
+          hosts:
+            COLSAR0[1:2]:
+
+        FARSAR:
+          hosts:
+            FARSAR0[1:2]:
+
+        SBKSAR:
+          hosts:
+            SBKSAR0[1:2]:
+
+# LAR
+
+        COLLAR:
+          hosts:
+            COLLAR0[1:2]:
+
+        FARLAR:
+          hosts:
+            FARLAR0[1:2]:
+
+        SBKLAR:
+          hosts:
+            SBKLAR0[1:2]:
+
+# ELN
+
+        COLELN:
+          hosts:
+            COLELN0[1:3]:
+
+        FARELN:
+          hosts:
+            FARELN0[1:3]:
+
+        SBKELN:
+          hosts:
+            SBKELN0[1:3]:
+
+#LNS
+
+        COLLNS:
+          hosts:
+            COLLNS0[1:4]:
+
+        FARLNS:
+          hosts:
+            FARLNS0[1:4]:
+
+        SBKLNS:
+          hosts:
+            SBKLNS0[1:4]:
+
+# DAS
+
+        COLDAS:
+          hosts:
+            COLDAS0[3:4]:
+
+        FARDAS:
+          hosts:
+            FARDAS0[3:4]:
+
+        SBKDAS:
+          hosts:
+            SBKDAS0[3:4]:
+
+        GUIDAS:
+          hosts:
+            GUIDAS0[1:2]:
+
+# IDM
+
+        COLIDM:
+          hosts:
+            COLIDM0[1:2]:
+
+        FARIDM:
+          hosts:
+            FARIDM0[1:2]:
+
+        SBKIDM:
+          hosts:
+            SBKIDM0[1:2]:
+
+
+# ANA
+
+        COLANA:
+          hosts:
+            COLANA0[1:2]:
+
+        FARANA:
+          hosts:
+            FARANA0[1:2]:
+
+        SBKANA:
+          hosts:
+            SBKANA0[1:2]:
+
+
+################ RAN ################
+
+RAN:
+  children:
+
+    BAYRAN:
+      children:
+        BAYIR:
+        BAYDS:
+        BAYMS:
+        BAYBR:
+        BAYTS:
+        BAYCAS:
+        BAYFAS:
+
+    SHERAN:
+      children:
+        SHEIR:
+        SHEDS:
+        SHEMS:
+        SHEBR:
+        SHETS:
+        SHECAS:
+        SHEFAS:
+
+# OS Groups
+    IOSXR:
+      children:
+        IR:
+
+
+    IOSXE:
+      children:
+        BR:
+
+    IOS:
+      children:
+        DS:
+        MS:
+        TS:
+        CAS:
+        FAS:
+
+# Device Groups
+
+    IR:
+      children:
+        BAYIR:
+        SHEIR:
+
+    DS:
+      children:
+        BAYDS:
+        SHEDS:
+
+    MS:
+      children:
+        BAYMS:
+        SHEMS:
+
+    BR:
+      children:
+        BAYBR:
+        SHEBR:
+
+    TS:
+      children:
+        BAYTS:
+        SHETS:
+
+    CAS:
+      children:
+        BAYCAS:
+        SHECAS:
+
+    FAS:
+      children:
+        BAYFAS:
+        SHEFAS:
+
+##### This is where we define hostnames
+
+# IR
+    BAYIR:
+        hosts:
+          BAYIR0[1:2]:
+
+    SHEIR:
+        hosts:
+          SHEIR0[1:2]:
+
+# DS
+    BAYDS:
+        hosts:
+          BAYDS0[1:2]:
+
+    SHEDS:
+        hosts:
+          SHEDS0[1:2]:
+
+# MS
+    BAYMS:
+        hosts:
+          BAYMS0[1:2]:
+
+    SHEMS:
+        hosts:
+          SHEMS0[1:2]:
+
+# BR
+    BAYBR:
+        hosts:
+          BAYBR0[1:2]:
+
+    SHEBR:
+        hosts:
+          SHEBR0[1:2]:
+# TS
+    BAYTS:
+        hosts:
+          BAYTS0[1:5]:
+          BAYTS[11:12]:
+
+    SHETS:
+        hosts:
+          SHETS0[1:4]:
+          SHETS[11:12]:
+# CAS
+    BAYCAS:
+        hosts:
+          BAYCAS0[1:4]:
+          BAYCAS[11:12]:
+
+    SHECAS:
+        hosts:
+          SHECAS01:
+          SHECAS03:
+          SHECAS[11:12]:
+
+# FAS
+    BAYFAS:
+        hosts:
+          BAYFAS0[3:4]:
+
+    SHEFAS:
+        hosts:
+          SHEFAS0[3:6]:
+
+################ HQ Classic ################
+
+HQ:
+  children:
+
+    HQSTE:
+      children:
+        HQSTEMBAR:
+        HQSTE10GL2SW:
+        HQSTENNPX:
+        HQSTETS:
+        HQSTENAT:
+
+    HQFAR:
+      children:
+        HQFARMBAR:
+        HQFAR10GL2SW:
+        HQFARNNPX:
+        HQFARNAT:
+        HQFARTS:
+
+    HQFBR:
+      children:
+        HQFBRDCSS:
+     
+    HQWAP:
+      children:
+        HQWAPDCSS:
+        HQWAPTS:
+        HQFBRTS:
+
+# OS Groups   
+
+    JUNOS:
+      children:
+        HQMBAR:
+        HQL2SW:
+    
+    
+    IOS:
+      children:
+        DCSS:
+        NPX:
+        NAT:
+        TS:
+        
+# Device Groups
+
+    HQMBAR:
+      children:
+        HQFARMBAR:
+        HQSTEMBAR:
+        
+    HQL2SW:
+      children:
+        HQSTE10GL2SW:
+        HQFAR10GL2SW:
+        
+    DCSS:
+      children:
+        HQFBRDCSS:
+        HQWAPDCSS:
+
+    NPX:
+      children:
+        HQFARNNPX:
+        HQSTENNPX:
+        
+    NAT:
+      children:
+        HQSTENAT:
+        HQFARNAT:
+        
+    TS:
+      children:
+        HQFARTS:
+        HQSTETS:
+        HQWAPTS:
+        HQFBRTS:
+        
+##### This is where we define hostnames
+
+    HQFARMBAR:
+      hosts:
+        HQFARMBAR01:
+                
+    HQSTEMBAR:
+      hosts:
+        HQSTEMBAR01:
+                
+    HQSTE10GL2SW:
+      hosts:
+        HQSTE10GL2SW[1:2]:
+                
+    HQFAR10GL2SW:
+      hosts:
+        HQFAR10GL2SW[1:2]:
+                
+    HQFBRDCSS:
+      hosts:
+        HQFBRDCSS01:
+                
+    HQWAPDCSS:
+      hosts:
+        HQWAPDCSS01:
+                
+    HQFARNNPX:
+      hosts:
+        HQFARNNPX01:
+                
+    HQSTENNPX:
+      hosts:
+        HQSTENNPX01:
+                
+    HQSTENAT:
+      hosts:
+        HQSTENAT01:
+                
+    HQFARNAT:
+      hosts:
+        HQFARNAT01:
+                
+    HQFARTS:
+      hosts:
+        HQFARTS01:
+                
+    HQSTETS:
+      hosts:
+        HQSTETS01:
+                
+    HQWAPTS:
+      hosts:
+        HQWAPTS01:
+                
+    HQFBRTS:
+      hosts:
+        HQFBRTS01:
+        
+################ HSN #############
+
+HSN:
+  children:
+    HSNCOL:
+      children:
+        HSNCOLMBAR:
+        HSNCOLL2SW:
+       
+    HSNFAR:
+      children:
+        HSNFARMBAR:
+        HSNFARL2SW:
+        
+    HSNSBK:
+      children:
+        HSNSBKMBAR:
+        HSNSBKL2SW:
+        
+
+# OS Groups   
+        
+    JUNOS:
+      children:
+        HSNMBAR:
+        HSNL2SW:
+        
+# Device Groups
+
+    HSNMBAR:
+      children:
+        HSNFARMBAR:
+        HSNCOLMBAR:
+        HSNSBKMBAR:
+        
+    HSNL2SW:
+      children:
+        HSNSTEL2SW:
+        HSNFARL2SW:
+        HSNSBKL2SW:
+        
+##### This is where we define hostnames
+
+    HSNFARMBAR:
+      hosts:
+        HSNFARMBAR01:
+        
+    HSNSBKMBAR:
+      hosts:
+        HSNSBKMBAR01:
+        
+    HSNCOLMBAR:
+      hosts:
+        HSNCOLMBAR01:
+        
+    HSNSBKL2SW:
+      hosts:
+        HSNSBKL2SW[1:2]:
+        
+    HSNFARL2SW:
+      hosts:
+        HSNFARL2SW[1:2]:
+            
+    HSNCOLL2SW:
+      hosts:
+        HSNCOLL2SW[1:2]:
+

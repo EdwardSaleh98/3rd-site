@@ -1,0 +1,53 @@
+---
+    - name: Check Variables Have Been Set
+      assert:
+        that:
+          - platform is defined
+          - username is defined
+          - password is defined
+          - vaultpass is defined
+        success_msg: "All parameters OK"
+        fail_msg: "Error parmaeteres not set"
+
+    - name: Check if vault directory exists
+      stat:
+        path: "{{ inventory_dir }}/group_vars/{{ platform.upper() }}/vault"
+      register: vault_dir
+
+    - name: Remove old files if they exist
+      file:
+        path: "{{ inventory_dir }}/group_vars/{{ platform.upper() }}/vault/vault.yml"
+        state: absent
+      when: vault_dir.stat.exists
+
+    - name: Create directory if missing
+      file: 
+        path: "{{ inventory_dir }}/group_vars/{{ platform.upper() }}/vault"
+        state: directory
+      when: not vault_dir.stat.exists
+
+    - name: Create new vault file
+      blockinfile:
+        block: |
+          ---
+          ansible_user: "{{ username }}"
+          ansible_password: "{{ password }}"
+        path: "{{ inventory_dir }}/group_vars/{{ platform.upper() }}/vault/vault.yml"
+        create: yes
+        mode: 0644
+
+    - name: Create Temp Vault password file
+      lineinfile:
+        path: /tmp/.vaultpass
+        line: "{{ vaultpass }}"
+        create: yes
+
+    - name: Encrypt new file created
+      shell: "ansible-vault encrypt --vault-password-file=/tmp/.vaultpass {{ inventory_dir }}/group_vars/{{ platform.upper() }}/vault/vault.yml"
+
+    - name: Delete temp vault file
+      file:
+        path: /tmp/.vaultpass
+        state: absent
+
+        

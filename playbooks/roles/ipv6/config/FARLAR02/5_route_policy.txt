@@ -1,0 +1,76 @@
+route-policy V6_BB1_LNS_OUTBOUND
+  if destination in V6_default route then
+    pass
+  endif   
+end-policy
+!
+route-policy V6_BB1_LNS_INBOUND
+  if destination in V6_bb1_infra_subnets then
+    done
+  endif
+  if destination in V6_static_eu then
+    done
+  endif
+  if destination in V6_bb1_eu_dynamic_range then
+    done
+  endif
+end-policy
+!
+route-policy V6_SAR_DIRECT_INBOUND
+  if destination in V6_default_route then
+    pass
+  endif   
+end-policy
+!
+route-policy V6_SAR_DIRECT_OUTBOUND
+  if destination in V6_bb1_infra_subnets then
+    set community (65212:110)
+    set med 100
+    done
+  endif
+  if destination in V6_bb1_eu_static_range then
+    set community (65212:120)
+    set med 100
+    done
+  endif
+  if destination in V6_bb1_eu_static_range_secondary then
+    set community (65212:125)
+    set med 100
+    done
+  endif
+  if destination in V6_bb1_eu_dynamic_range then
+    set community (65212:130)
+    set med 100
+    done
+  endif
+end-policy
+!
+route-policy V6_BB1_LAR_INBOUND
+ if destination in V6_match_all then
+  pass
+ endif
+end-policy
+!
+route-policy V6_BB1_LAR_OUTBOUND
+ if destination in V6_default_route then
+  set med 200
+  done
+ endif
+ if destination in V6_match_all then
+  pass
+ endif
+end-policy
+!
+
+route-policy V6_BB1_DWDM_INBOUND
+ if destination in V6_match_all then
+  pass
+ endif
+end-policy
+!
+route-policy V6_BB1_DWDM_OUTBOUND
+ if destination in V6_static_eu then
+  done
+ endif
+end-policy
+!

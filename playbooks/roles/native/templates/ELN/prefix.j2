@@ -1,0 +1,14 @@
+!
+{% for interface in sites[inventory_hostname[0:3]][inventory_hostname]['l2tp']['interfaces'] %}
+{% if interface.startswith('lo') %}
+{% set ip = sites[inventory_hostname[0:3]][inventory_hostname]['l2tp']['interfaces'][interface]['ip'] %}
+{% if interface == "lo1" %}
+ ip prefix-list LT_LAR_ANNOUNCE seq 20 permit {{ ip }}
+{% elif interface == "lo2" %}
+ ip prefix-list LT_LAR_ANNOUNCE seq 30 permit {{ ip }}
+{% endif %}
+{% endif %}
+{% endfor %}
+!
+ ip prefix-list LT_LAR_ACCEPT seq 10 permit 0.0.0.0/0
+!

@@ -1,0 +1,106 @@
+vpdn-group bbone
+ description L2TP Tunnels from BRAS for Broadband One Customers
+ accept-dialin
+  protocol l2tp
+  virtual-template 1
+ terminate-from hostname BBONEVT
+ local name BBONETONAS
+ l2tp tunnel password fUY78aoqpc93nu8q
+ l2tp tunnel receive-window 30000
+ ip tos reflect
+!
+interface Virtual-Template1
+ mtu 1492
+ no ip address
+ no ip unreachables
+ ip verify unicast reverse-path allow-self-ping
+ no logging event link-status
+ no peer default ip address
+ keepalive 30
+ ppp mtu adaptive proxy
+ ppp authentication chap 21CEUA
+ ppp authorization 21CEUA
+ ppp accounting 21CEUA
+ ppp timeout idle 4294967
+end
+!
+
+interface Loopback1
+ description L2TP Tunnel endpoint 1 and Radius Source
+ ipv4 address 213.120.163.180 255.255.255.255
+!
+interface Loopback2
+ description L2TP Tunnel endpoint 2
+ ipv4 address 213.120.163.181 255.255.255.255
+!
+interface Loopback11
+ description BGP Peering Source Interface L2TP
+ ipv4 address 192.168.100.22 255.255.255.255
+ logging event link-status
+!
+interface Port-channel63
+ description SBKELN02 to SBKLAR01
+ mtu 9200
+ no ip address
+ lacp fast-switchover
+ load-interval 30
+!
+interface Port-channel63.632
+ description Low Touch (L2TP) VLAN
+ encapsulation dot1Q 632
+ ip address 217.32.240.65 255.255.255.254
+ no ip proxy-arp 
+ no ip redirects 
+ no ip unreachables
+ ip ospf cost 200
+ ip ospf message-digest-key 1 md5 gXr8q6FXwrbbknyr
+!
+interface Port-channel64
+ description SBKELN02 to SBKLAR02
+ mtu 9200
+ no ip address
+ lacp fast-switchover
+ load-interval 30
+!
+interface Port-channel64.632
+ description Low Touch (L2TP) VLAN
+ encapsulation dot1Q 632
+ ip address 217.32.240.67 255.255.255.254
+ no ip proxy-arp 
+ no ip redirects 
+ no ip unreachables
+ ip ospf cost 200
+ ip ospf message-digest-key 1 md5 gXr8q6FXwrbbknyr
+!
+interface Hu0/0/0
+ description Link SBKELN02 to SBKLAR01
+ mtu 9200
+ no ip address
+ logging event link-status
+ load-interval 30
+ cdp enable
+ channel-group 63 mode active
+ hold-queue 40960 in
+ hold-queue 40960 out
+!
+interface Hu1/0/0
+ description Link SBKELN02 to SBKLAR02
+ mtu 9200
+ no ip address
+ logging event link-status
+ load-interval 30
+ cdp enable
+ channel-group 64 mode active
+ hold-queue 40960 in
+ hold-queue 40960 out
+!
+!
+
+!
+ ip prefix-list LT_LAR_ANNOUNCE seq 20 permit lo1
+ ip prefix-list LT_LAR_ANNOUNCE seq 30 permit lo2
+!
+ ip prefix-list LT_LAR_ACCEPT seq 10 permit 0.0.0.0/0
+!
+
+

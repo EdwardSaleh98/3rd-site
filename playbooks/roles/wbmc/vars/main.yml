@@ -1,0 +1,49 @@
+---
+sites:
+
+  SBK:
+
+    password: M3@Culp@
+
+    SBKLAR01:
+      wbmc:
+        interfaces:
+          be30.304:
+            ip: 81.139.58.212/30
+          lo14:
+            ip: 192.168.203.1/32
+          hu0/0/0/7.1051:
+            ip: 81.139.58.246/30
+
+        bgp:
+          SBKLAR:
+            ip: 192.168.203.2
+            
+          SBKFER:
+            ip: 81.139.58.245/30
+
+        ospf:
+          SBKLAR:
+            ip: 192.168.203.2
+    
+    SBKLAR02:
+      wbmc:
+        interfaces:
+          be30.304:
+            ip: 81.139.58.213/30
+          lo14:
+            ip: 192.168.203.2/32
+          hu0/0/0/7.1052:
+            ip: 81.139.58.250/30
+         
+
+        bgp:
+          SBKLAR:
+            ip: 192.168.203.1
+
+          SBKFER:
+            ip: 81.139.58.249/30
+
+        ospf:
+          SBKLAR:
+            ip: 192.168.203.1

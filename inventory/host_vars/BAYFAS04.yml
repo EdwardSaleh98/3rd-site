@@ -1,0 +1,5 @@
+--- 
+ansible_host: 10.22.0.90
+
+host_name: BAYFAS04
+

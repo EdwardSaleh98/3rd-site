@@ -1,0 +1,6 @@
+- name: Generate some config
+  template:
+    src: "SAR/{{ item.value }}.j2"
+    dest: "{{ role_path }}/config/{{ inventory_hostname }}/{{ item.key }}_{{ item.value }}.txt"
+  with_dict:
+    1: dns 

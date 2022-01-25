@@ -1,0 +1,97 @@
+{% set as_num = sites[inventory_hostname[0:3]][inventory_hostname]['as_num']%}
+{% set prim_range = sites[inventory_hostname[0:3]][inventory_hostname]['eu_dynamic_pools']['prim_range'] %}
+{% set sec_range1 = sites[inventory_hostname[0:3]][inventory_hostname]['eu_dynamic_pools']['sec_range1'] %}
+{% set sec_range2 = sites[inventory_hostname[0:3]][inventory_hostname]['eu_dynamic_pools']['sec_range2'] %}
+{% set eln02lo = sites[inventory_hostname[0:3]][inventory_hostname]['bgp']['eln02lo'] %}
+{% set eln03lo = sites[inventory_hostname[0:3]][inventory_hostname]['bgp']['eln03lo'] %}
+{% set sar01 = sites[inventory_hostname[0:3]][inventory_hostname]['bgp']['sar01'] %}
+{% set sar02 = sites[inventory_hostname[0:3]][inventory_hostname]['bgp']['sar02'] %}
+{% set local_lar = sites[inventory_hostname[0:3]][inventory_hostname]['bgp']['local_lar'] %}
+router bgp {{ as_num }} 
+ neighbor-group V6_BB1_LNS_PEER
+   remote-as {{ as_num }}
+   timers 3 9
+   update-source Loopback1100
+   address-family ipv6 unicast
+    route-policy V6_BB1_LNS_INBOUND in
+    route-reflector-client
+    route-policy V6_BB1_LNS_OUTBOUND out
+    soft-reconfiguration inbound always
+  !
+ vrf BBONEDEFAULT
+  rd {{ as_num }}:1100
+  address-family ipv6 unicast
+   maximum-paths ebgp 4
+     {{ prim_range }}
+     {{ sec_range1 }}
+     {{ sec_range2 }} 
+!
+ neighbor {{ eln02lo }} 
+  use neighbor-group V6_BB1_LNS_PEER
+  description ibgp ipv6 peer to ELN02
+ !
+ neighbor {{ eln03lo }}
+  use neighbor-group V6_BB1_LNS_PEER
+  description ibgp ipv6 peer to ELN03
+  !
+!
+router bgp {{ as_num }}
+ vrf BBONEDEFAULT
+  !
+  neighbor {{ sar01 }} 
+   remote-as {{ as_num }}
+   timers 10 30
+   password 0 <password>
+   description eBGP Peer to SAR01 for BB1
+   address-family ipv6 unicast
+    send-community-ebgp
+    route-policy V6_SAR_DIRECT_INBOUND in
+    route-policy V6_SAR_DIRECT_OUTBOUND out
+    soft-reconfiguration inbound always
+  !
+  neighbor {{ sar02 }}
+   remote-as {{ as_num }}
+   timers 10 30
+   password 0 <password>
+   description eBGP Peer to SAR02 for BB1
+   address-family ipv6 unicast
+    send-community-ebgp
+    route-policy V6_SAR_DIRECT_INBOUND in 
+    route-policy V6_SAR_DIRECT_OUTBOUND out
+    soft-reconfiguration inbound always
+  !
+ !
+
+router bgp {{ as_num }}
+ vrf BBONEDEFAULT  
+  !
+  neighbor {{ local_lar }}
+   remote-as {{ as_num }} 
+   timers 10 30
+   description iBGP ipv6 Peer to local LAR for BB1
+   address-family ipv6 unicast
+    route-policy V6_BB1_LAR_INBOUND in
+    route-policy V6_BB1_LAR_OUTBOUND out
+    soft-reconfiguration inbound always
+ !
+!
+{% for device in sites[inventory_hostname[0:3]][inventory_hostname]['bgpsites'] %}
+{% set as_numr = sites[inventory_hostname[0:3]][inventory_hostname]['bgpsites'][device]['as_numr'] %}
+{% set ip = sites[inventory_hostname[0:3]][inventory_hostname]['bgpsites'][device]['ip'] %}
+router bgp {{ as_num }} 
+ vrf BBONEDEFAULT
+  !
+  neighbor {{ ip }}
+   remote-as {{ as_numr }}
+   timers 10 30
+   description BB1 Intersite IPv6 peer {{ device }}
+   password clear <password>
+   address-family ipv6 unicast
+    route-policy V6_BB1_DWDM_INBOUND in
+    route-policy V6_BB1_DWDM_OUTBOUND out
+    soft-reconfiguration inbound always
+   !
+  !
+{% endfor %}
+ !
+!

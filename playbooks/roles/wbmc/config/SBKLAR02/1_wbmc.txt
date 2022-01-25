@@ -1,0 +1,169 @@
+ipv4 access-list WBMCS_IN
+ 10 permit ipv4 any any
+!
+prefix-set WBMCS_RADIUS_CLIENTS
+  81.145.117.8/32,
+  81.145.117.9/32,
+  81.145.117.10/32,
+  81.145.117.11/32,
+  213.120.186.0/23 le 32,
+  213.120.192.0/24 le 32
+end-set
+!
+prefix-set RRC_SVC
+  213.120.176.224/27,
+  213.120.180.224/27,
+  81.144.94.1/32,
+  213.120.163.160/27 le 32
+end-set
+!
+prefix-set LT_TO_WBMCS
+ 213.120.163.180/32,
+ 213.120.163.181/32,
+ 213.120.163.182/32,
+ 213.120.163.183/32
+end-set
+!
+prefix-set WBMCS_BB1_INBOUND
+  81.145.120.0/23 le 32,
+  213.120.186.0/23 le 32,
+  213.120.192.0/24 le 32,
+  213.1.178.0/23 le 32,
+  213.1.180.0/22 le 32,
+  213.1.184.0/22 le 32,
+  81.145.117.0/24 le 32
+end-set
+!
+prefix-set WBMCS_BB1_OUTBOUND
+ 213.120.176.224/27,
+ 213.120.180.224/27,
+ 213.120.163.180/32,
+ 213.120.163.181/32,
+ 213.120.163.182/32,
+ 213.120.163.183/32
+end-set
+!
+route-policy IMPORT_TO_WBMCS
+  if destination in LT_TO_WBMCS then
+    set weight 40000
+  endif
+end-policy
+!
+route-policy DEFAULT_TO_WBMCS
+  if destination in RRC_SVC then
+    set weight 40000
+    done
+  endif
+end-policy
+!
+route-policy WBMCS_TO_DEFAULT
+  if destination in WBMCS_RADIUS_CLIENTS then
+    set weight 40000
+    done
+  endif
+end-policy
+!
+
+
+vrf wbmcs
+ address-family ipv4 unicast
+  import route-policy IMPORT_TO_WBMCS
+  import from default-vrf route-policy DEFAULT_TO_WBMCS
+  import route-target
+   65213:102
+   65213:104
+  !
+  export to default-vrf route-policy WBMCS_TO_DEFAULT
+  export route-target
+   65213:104
+  !
+ !
+!
+interface bundle-ether30.304
+ description Link for WBMC Shared Resilience
+ vrf wbmcs
+ ipv4 address 81.139.58.213 255.255.255.252
+ load-interval 30
+ encapsulation dot1q 304
+!
+interface Loopback14
+ description Loopback for BGP peering in WBMC Shared
+ vrf wbmcs
+ ipv4 address 192.168.203.2 255.255.255.255
+!
+interface hu0/0/0/7
+ description WBMC Shared 100G Connection
+ mtu 1900
+ no shutdown
+ load-interval 30
+!
+interface hu0/0/0/7.1052
+ vrf wbmcs
+ ipv4 address 81.139.58.250 255.255.255.252
+ arp timeout 300
+ load-interval 30
+ ipv4 access-group WBMCS_IN ingress
+ encapsulation dot1q 1052
+!
+route-policy WBMCS_BB1_INBOUND
+  if destination in (0.0.0.0/0) then
+    drop
+  endif
+  if destination in WBMCS_BB1_INBOUND then
+    set local-preference 150
+    set community (65200:10)
+  endif
+end-policy
+!
+route-policy WBMCS_BB1_OUTBOUND
+  if destination in WBMCS_BB1_OUTBOUND then
+    done
+  endif
+end-policy
+!
+
+router bgp 65213
+ vrf wbmcs
+  rd 65213:104
+  address-family ipv4 unicast
+  !
+  neighbor 192.168.203.1
+   remote-as 65213
+   timers 10 30
+   password M3@Culp@
+   description WBMC Shared iBGP Inter LAR Peering
+   update-source Loopback14
+   address-family ipv4 unicast
+    soft-reconfiguration inbound always
+   !
+  !
+  neighbor 81.139.58.249
+   remote-as 65200
+   local-as 65313
+   timers 60 180 
+   password 0 M3@Culp@
+   description WBMC Shared Peering
+   address-family ipv4 unicast
+    next-hop-self
+    route-policy WBMCS_BB1_INBOUND in
+    route-policy WBMCS_BB1_OUTBOUND out
+    soft-reconfiguration inbound always
+!
+
+router ospf 1100
+ vrf wbmcs
+  router-id 192.168.203.1
+  area 0.0.0.0
+   mtu-ignore enable
+   interface Bundle-Ether30.304
+    cost 1
+    authentication message-digest
+    message-digest-key 1 md5 encrypted M3@Culp@
+   !
+   interface Loopback14
+    passive enable
+   !
+  !
+ !
+!
+

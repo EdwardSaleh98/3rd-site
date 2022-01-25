@@ -1,0 +1,6 @@
+!
+ ip prefix-list LT_LAR_ANNOUNCE seq 20 permit 213.120.163.182/32
+ ip prefix-list LT_LAR_ANNOUNCE seq 30 permit 213.120.163.183/32
+!
+ ip prefix-list LT_LAR_ACCEPT seq 10 permit 0.0.0.0/0
+!

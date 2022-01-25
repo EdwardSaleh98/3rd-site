@@ -1,0 +1,21 @@
+!
+{% set lo11_ip = sites[inventory_hostname[0:3]][inventory_hostname]['l2tp']['interfaces']['lo11']['ip'] %}
+router ospf 101
+ area 0.0.0.0 authentication message-digest
+ router-id {{ lo11_ip|ipaddr('address') }}
+ nsf ietf
+ passive-interface default
+{% for interface in sites[inventory_hostname[0:3]][inventory_hostname]['l2tp']['interfaces'] %}
+{% if interface.startswith('po') %}
+{% set ip = sites[inventory_hostname[0:3]][inventory_hostname]['l2tp']['interfaces'][interface]['ip'] %}
+ no passive-interface {{ interface|replace("po", "Port-channel") }}
+{% endif %}
+{% endfor %}
+{% for interface in sites[inventory_hostname[0:3]][inventory_hostname]['l2tp']['interfaces'] %}
+{% if interface.startswith('po') %}
+{% set ip = sites[inventory_hostname[0:3]][inventory_hostname]['l2tp']['interfaces'][interface]['ip'] %}
+ network {{ ip|ipaddr('address') }} 0.0.0.0 area 0.0.0.0
+{% endif %}
+{% endfor %}
+ network {{ lo11_ip|ipaddr('address') }} 0.0.0.0 area 0.0.0.0
+!

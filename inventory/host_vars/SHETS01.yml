@@ -1,0 +1,5 @@
+--- 
+ansible_host: 10.22.1.111
+
+host_name: SHETS01
+

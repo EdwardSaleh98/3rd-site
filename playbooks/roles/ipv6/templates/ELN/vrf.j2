@@ -1,0 +1,18 @@
+ipv6 unicast-routing
+no ip nat service dns-v6
+
+ipv6 dhcp binding track ppp
+no ipv6 dhcp ppp terminate
+
+ipv6 dhcp pool BTB_V6
+ prefix-delegation aaa method-list BTB_RAD lifetime 62208000 3110400
+ accounting 21CRRC
+
+{% set as_num = sites[inventory_hostname[0:3]][inventory_hostname]['as_num']%}
+vrf definition BBONEDEFAULT
+ address-family ipv6
+  route-target export {{ as_num }}:3
+  route-target import {{ as_num }}:3
+ exit-address-family
+ !
+

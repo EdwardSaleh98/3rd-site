@@ -1,0 +1,9 @@
+---
+- name: Import vault gen playbook
+  import_tasks: vault_gen.yml
+  tags: vault
+
+- name: Import ansible config gen playbook
+  import_tasks: ansible_config.yml
+  tags: config
+

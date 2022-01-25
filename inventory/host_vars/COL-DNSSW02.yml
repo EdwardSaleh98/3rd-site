@@ -1,0 +1,5 @@
+--- 
+ansible_host: 10.41.3.207
+
+host_name: COL-DNSSW02
+

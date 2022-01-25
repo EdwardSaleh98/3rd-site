@@ -1,0 +1,31 @@
+{% set prim_range = sites[inventory_hostname[0:3]][inventory_hostname]['eu_dynamic_pools']['prim_range'] %}
+{% set sec_range1 = sites[inventory_hostname[0:3]][inventory_hostname]['eu_dynamic_pools']['sec_range1'] %}
+{% set sec_range2 = sites[inventory_hostname[0:3]][inventory_hostname]['eu_dynamic_pools']['sec_range2'] %}
+prefix-set V6_bb1_eu_static_range
+  {{ prim_range }}
+end-set
+!
+prefix-set V6_bb1_eu_static_range_secondary
+  {{ sec_range1 }}
+  {{ sec_range2 }}
+end-set
+!
+{% set eln02 = sites[inventory_hostname[0:3]][inventory_hostname]['prefix_list']['eln02'] %}
+{% set eln03 = sites[inventory_hostname[0:3]][inventory_hostname]['prefix_list']['eln03'] %}
+{% set eln02_1 = sites[inventory_hostname[0:3]][inventory_hostname]['prefix_list']['eln02_1'] %}
+{% set eln03_1 = sites[inventory_hostname[0:3]][inventory_hostname]['prefix_list']['eln03_1'] %}
+prefix-set V6_bb1_infra_subnets
+  {{ eln02 }},
+  {{ eln02_1 }},
+  {{ eln03 }},
+  {{ eln03_1 }}
+end-set
+!
+{% set dynamic02 = sites[inventory_hostname[0:3]][inventory_hostname]['prefix_list']['dynamic02'] %}
+{% set dynamic03 = sites[inventory_hostname[0:3]][inventory_hostname]['prefix_list']['dynamic03'] %}
+prefix-set V6_bb1_eu_dynamic_range
+  {{ dynamic02 }}
+  {{ dynamic03 }} 
+end-set
+!
+

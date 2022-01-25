@@ -1,0 +1,16 @@
+{% set v4lo = sites[inventory_hostname[0:3]][inventory_hostname]['v4lo']%}
+router ospfv3 1100 vrf BBONEDEFAULT
+ router-id {{ v4lo }}
+ nsr
+ !
+ address-family ipv6 unicast
+  passive-interface default
+{% for interface in sites[inventory_hostname[0:3]][inventory_hostname]['interfaces'] %}
+{% if interface.startswith('po') %}
+  no passive-interface {{ interface|replace("po", "Port-channel") }}
+{% endif %}
+{% endfor %}
+  log-adjacency-changes
+ exit-address-family
+ !
+

@@ -1,0 +1,5 @@
+--- 
+ansible_host: 10.41.3.69
+
+host_name: SBKIDM02
+

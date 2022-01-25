@@ -1,0 +1,5 @@
+--- 
+ansible_host: 10.22.0.100
+
+host_name: BAYBR01
+

@@ -1,0 +1,10 @@
+{% set as_num = sites[inventory_hostname[0:3]][inventory_hostname]['as_num']%}
+vrf BBONEDEFAULT
+ address-family ipv6 unicast
+  import route-target
+   {{ as_num }}:1100
+  !
+  export route-target
+   {{ as_num }}:1100
+  !
+

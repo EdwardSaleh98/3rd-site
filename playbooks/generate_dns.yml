@@ -1,0 +1,7 @@
+- name: Generate Config
+  hosts: SBKSAR01, SBKSAR02, SBKDAS03, SBKDAS04
+  connection: local
+  gather_facts: false
+ 
+  roles:
+    - dns

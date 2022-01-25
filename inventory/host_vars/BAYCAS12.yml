@@ -1,0 +1,5 @@
+--- 
+ansible_host: 10.22.0.188
+
+host_name: BAYCAS12
+

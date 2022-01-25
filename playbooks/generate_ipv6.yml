@@ -1,0 +1,7 @@
+- name: Generate Config
+  hosts: FARSAR01, FARSAR02 
+  connection: local
+  gather_facts: false
+ 
+  roles:
+    - ipv6

@@ -1,0 +1,5 @@
+--- 
+ansible_host: 10.22.0.111
+
+host_name: BAYTS01
+

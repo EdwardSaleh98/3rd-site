@@ -1,0 +1,9 @@
+{% for interface in sites[inventory_hostname[0:3]][inventory_hostname]['interfaces'] %}
+{% set ip = sites[inventory_hostname[0:3]][inventory_hostname]['interfaces'][interface]['ip'] %}
+{% if interface.startswith('be') %}
+interface {{ interface|replace("be", "Bundle-Ether") }} 
+ ipv6 address {{ ip }} 
+ ipv6 nd suppress-ra
+!
+{% endif %}
+{% endfor %}

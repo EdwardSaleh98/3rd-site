@@ -1,0 +1,10 @@
+{set v4lo = sites[inventory_hostname[0:3]]['inventory_hostname']
+
+router ospfv3 1100
+ nsr
+ !
+ vrf BBONEDEFAULT
+  router-id {{ v4lo }}
+  area 0.0.0.0
+   mtu-ignore enable
+   interface Bundle-Ether30.306

@@ -1,0 +1,5 @@
+--- 
+ansible_host: 10.22.1.123
+
+host_name: SHEMS02
+

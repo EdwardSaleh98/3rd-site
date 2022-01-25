@@ -1,0 +1,5 @@
+--- 
+ansible_host: 10.22.1.100
+
+host_name: SHEBR01
+

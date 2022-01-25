@@ -1,0 +1,5 @@
+--- 
+ansible_host: 10.22.1.187
+
+host_name: SHECAS11
+

@@ -1,0 +1,84 @@
+vpdn-group bbone
+ description L2TP Tunnels from BRAS for Broadband One Customers
+ accept-dialin
+  protocol l2tp
+  virtual-template 1
+ terminate-from hostname BBONEVT
+ local name BBONETONAS
+ l2tp tunnel password {{ sites[inventory_hostname[0:3]]['l2tp_password'] }}
+ l2tp tunnel receive-window 30000
+ ip tos reflect
+!
+interface Virtual-Template1
+ mtu 1492
+ no ip address
+ no ip unreachables
+ ip verify unicast reverse-path allow-self-ping
+ no logging event link-status
+ no peer default ip address
+ keepalive 30
+ ppp mtu adaptive proxy
+ ppp authentication chap 21CEUA
+ ppp authorization 21CEUA
+ ppp accounting 21CEUA
+ ppp timeout idle 4294967
+end
+!
+
+{% for interface in sites[inventory_hostname[0:3]][inventory_hostname]['l2tp']['interfaces'] %}
+{% if interface.startswith('lo') %}
+{% set ip = sites[inventory_hostname[0:3]][inventory_hostname]['l2tp']['interfaces'][interface]['ip'] %}
+{% if interface == "lo1" %}
+interface {{ interface|replace("lo", "Loopback") }}
+ description L2TP Tunnel endpoint 1 and Radius Source
+ ipv4 address {{ ip|ipaddr('address') }} {{ ip |ipaddr('netmask') }}
+!
+{% elif interface == "lo2" %}
+interface {{ interface|replace("lo", "Loopback") }}
+ description L2TP Tunnel endpoint 2
+ ipv4 address {{ ip|ipaddr('address') }} {{ ip |ipaddr('netmask') }}
+!
+{% elif interface == "lo11" %}
+interface {{ interface|replace("lo", "Loopback") }}
+ description BGP Peering Source Interface L2TP
+ ipv4 address {{ ip|ipaddr('address') }} {{ ip |ipaddr('netmask') }}
+ logging event link-status
+!
+{% endif %}
+{% elif interface.startswith('po') %}
+{% set ip = sites[inventory_hostname[0:3]][inventory_hostname]['l2tp']['interfaces'][interface]['ip'] %}
+{% set desc = sites[inventory_hostname[0:3]][inventory_hostname]['l2tp']['interfaces'][interface]['b_end'] %}
+interface {{ interface.split(".")[0]|replace("po", "Port-channel") }}
+ description {{ inventory_hostname }} to {{ desc }}
+ mtu 9200
+ no ip address
+ lacp fast-switchover
+ load-interval 30
+!
+interface {{ interface|replace("po", "Port-channel") }}
+ description Low Touch (L2TP) VLAN
+ encapsulation dot1Q {{ interface.split(".")[1] }}
+ ip address {{ ip|ipaddr('address') }} {{ ip |ipaddr('netmask') }}
+ no ip proxy-arp 
+ no ip redirects 
+ no ip unreachables
+ ip ospf cost 200
+ ip ospf message-digest-key 1 md5 {{ sites[inventory_hostname[0:3]]['md5_password'] }}
+!
+{% elif interface.startswith('hu') %}
+{% set desc = sites[inventory_hostname[0:3]][inventory_hostname]['l2tp']['interfaces'][interface]['b_end'] %}
+{% set c_grp = sites[inventory_hostname[0:3]][inventory_hostname]['l2tp']['interfaces'][interface]['channel_grp'] %}
+interface {{ interface|replace("hu", "Hu") }}
+ description Link {{ inventory_hostname }} to {{ desc }}
+ mtu 9200
+ no ip address
+ logging event link-status
+ load-interval 30
+ cdp enable
+ channel-group {{ c_grp }} mode active
+ hold-queue 40960 in
+ hold-queue 40960 out
+!
+{% endif %}
+{% endfor %}
+!

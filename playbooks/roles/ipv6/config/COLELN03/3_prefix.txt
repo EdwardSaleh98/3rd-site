@@ -1,0 +1,11 @@
+ipv6 local pool bb1-ipv6-pool 2a00:23d0:2200::/39 56
+!
+ipv6 route vrf BBONEDEFAULT 2a00:23d0:2200::/39  Null0
+!
+ipv6 prefix-list V6_BB1_LAR_INBOUND seq 10 permit ::/0
+!
+ipv6 prefix-list V6_BB1_LAR_OUTBOUND seq 10 permit 2a00:23d0:2200::/39
+ipv6 prefix-list V6_BB1_LAR_OUTBOUND seq 20 deny 2a00:23d0:2200::/39  ge 56
+ipv6 prefix-list V6_BB1_LAR_OUTBOUND seq 30 permit ::/0 le 56 ge 56
+!
+

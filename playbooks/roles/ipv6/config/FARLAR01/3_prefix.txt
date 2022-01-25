@@ -1,0 +1,22 @@
+prefix-set V6_bb1_eu_static_range
+  2a00:23d0:2c00::/40
+end-set
+!
+prefix-set V6_bb1_eu_static_range_secondary
+  2a00:23d0:2d00::/40
+  2a00:23d0:2e00::/40
+end-set
+!
+prefix-set V6_bb1_infra_subnets
+  2a00:23a0:0125:0::2/127,
+  2a00:23a0:0125:1::2/127,
+  2a00:23a0:0125:2::2/127,
+  2a00:23a0:0125:3::2/127
+end-set
+!
+prefix-set V6_bb1_eu_dynamic_range
+  2a00:23d0:2400::/39
+  2a00:23d0:2600::/39 
+end-set
+!
+

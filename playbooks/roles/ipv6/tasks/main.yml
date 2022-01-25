@@ -1,0 +1,20 @@
+---
+
+- name: Create directory for config
+  file:
+    path: "{{ role_path }}/config/{{ inventory_hostname }}/"
+    state: directory
+  tags: eln, lar, sar
+
+- name: Generate LAR Config
+  import_tasks: eln.yml
+  tags: eln
+
+- name: Generate LAR Config
+  import_tasks: lar.yml
+  tags: lar 
+
+- name: Generate LAR Config
+  import_tasks: sar.yml
+  tags: sar
+

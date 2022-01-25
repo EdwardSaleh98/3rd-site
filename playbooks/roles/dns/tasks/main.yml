@@ -1,0 +1,14 @@
+---
+- name: Create directory for config
+  file:
+    path: "{{ role_path }}/config/{{ inventory_hostname }}/"
+    state: directory
+  tags: sar, das
+
+- name: Generate SAR Config
+  import_tasks: sar.yml
+  tags: sar
+
+- name: Generate DAS Config
+  import_tasks: das.yml
+  tags: das

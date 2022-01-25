@@ -1,0 +1,20 @@
+---
+- hosts: localhost
+  gather_facts: false
+  connection: local
+  vars_prompt:
+   - name: platform
+     prompt: "Enter Platform"
+     private: no
+   - name: username
+     prompt: "Enter Username"
+     private: no
+   - name: password
+     prompt: "Enter password"
+     private: yes
+   - name: vaultpass
+     prompt: "Enter Vault Password"
+     private: yes
+
+  roles:
+    - setup

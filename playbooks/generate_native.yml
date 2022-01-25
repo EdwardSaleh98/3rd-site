@@ -1,0 +1,8 @@
+- name: Generate Config
+  hosts: SBKELN02,SBKELN03
+  connection: local
+  gather_facts: false
+ 
+  roles:
+#    - wbmc
+    - native

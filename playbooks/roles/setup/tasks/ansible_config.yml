@@ -1,0 +1,4 @@
+- name: Generate Ansible.cfg
+  ansible.builtin.template:
+    src: "{{playbook_dir}}/roles/setup/templates/1_conf.j2"
+    dest: "{{playbook_dir}}/ansible.cfg"

@@ -1,0 +1,104 @@
+edit prefix-set OX-BB1-ANYCAST inline add  81.130.111.248/31 le 32
+!
+object-group network ipv4 ox_bb1_anycast
+ 81.130.111.248/31
+!
+route-policy ox-bb1-in
+##### Routes allowed from OX BB1 VMs
+  if destination in OX-BB1-ANYCAST then
+    apply add-dns-community
+    done
+  endif
+end-policy
+!
+route-policy ox-bb1-out
+##### Routes advertised to OX BB1 VMs
+  if destination in default_route then
+    pass
+  endif
+end-policy
+!
+object-group network ipv4 ox_bb1_public_network
+  217.32.240.192/28,
+  217.32.240.208/28
+ description local DNS public network
+!
+ipv4 access-list DNS_BB1_OUT
+ 10 remark ##### PERMITTED TRAFFIC TO BB1 DNS PUBLIC INTERFACE #####
+ 20 permit udp any net-group ox_bb1_anycast eq domain
+ 30 permit tcp any net-group ox_bb1_anycast eq domain
+ 40 permit udp any eq domain net-group ox_bb1_anycast
+ 50 permit tcp any eq domain net-group ox_bb1_anycast
+ 60 permit udp any net-group ox_bb1_public_network eq domain
+ 70 permit tcp any net-group ox_bb1_public_network eq domain
+ 80 permit udp any eq domain net-group ox_bb1_public_network
+ 90 permit tcp any eq domain net-group ox_bb1_public_network
+ 100 permit icmp any
+
+interface bundle-ether98.551
+ description BB1 DNS Publix Subnet
+ vrf services
+ ipv4 address 217.32.240.206 255.255.255.240
+ ipv4 address 
+ load-interval 30
+ encapsulation dot1q  
+ ipv4 access-group DNS_BB1_OUT egress
+!
+
+router bgp 65113
+!
+af-group OX-BB1-AF-GRP address-family ipv4 unicast
+ route-policy ox-bb1-in in
+ route-policy ox-bb1-out out
+ maximum-prefix 100 75 warning-only
+ remove-private-AS inbound
+ soft-reconfiguration inbound always
+!
+neighbor-group OX-BB1-NEIGHBOR-GRP
+ use session-group OX-BTDNS-SESSION-GRP
+ address-family ipv4 unicast
+  use af-group OX-BB1-AF-GRP
+!
+  vrf services
+  neighbor 217.32.240.193 
+   description Peer to BB1 dnsdist VM via {'bundle-ether98.551': {'ip': '217.32.240.206/28'}}
+   use neighbor-group OX-BB1-NEIGHBOR-GRP
+  !
+  vrf services
+  neighbor 217.32.240.194 
+   description Peer to BB1 dnsdist VM via {'bundle-ether98.551': {'ip': '217.32.240.206/28'}}
+   use neighbor-group OX-BB1-NEIGHBOR-GRP
+  !
+  vrf services
+  neighbor 217.32.240.195 
+   description Peer to BB1 dnsdist VM via {'bundle-ether98.551': {'ip': '217.32.240.206/28'}}
+   use neighbor-group OX-BB1-NEIGHBOR-GRP
+  !
+  vrf services
+  neighbor 217.32.240.196 
+   description Peer to BB1 dnsdist VM via {'bundle-ether98.551': {'ip': '217.32.240.206/28'}}
+   use neighbor-group OX-BB1-NEIGHBOR-GRP
+  !
+edit prefix-set LOCAL-DNS-TRAFFIC inline add 81.130.111.248/29 le 32
+edit prefix-set LOCAL-DNS-TRAFFIC inline add 217.32.240.192/28
+edit prefix-set LOCAL-DNS-TRAFFIC inline add 217.32.240.208/28
+edit prefix-set RSN-BT-INFRASTRUCTURE inline add 81.130.111.248/29 le 32
+edit prefix-set RSN-BT-INFRASTRUCTURE inline add 217.32.240.192/28 le 32
+edit prefix-set RSN-BT-INFRASTRUCTURE inline add 217.32.240.208/28 le 32
+
+ipv4 access-list LTDPI_Backup_DS 
+ 750 permit ipv4 any 81.130.111.248 0.0.0.7
+ 760 permit ipv4 any 217.32.240.192 0.0.0.15
+ 770 permit ipv4 any 217.32.240.208 0.0.0.15
+ 780 permit ipv4 217.32.240.192 0.0.0.15 any
+ 790 permit ipv4 217.32.240.208 0.0.0.15 any
+!
+ipv4 access-list WWW_Infrastructure_Restriction_DPIBYPASS_NoObjGrp
+  691 permit ipv4 any 81.130.111.248 0.0.0.7 nexthop1 vrf services
+  701 permit icmp any 217.32.240.192 0.0.0.15 nexthop1 vrf services
+  711 permit icmp any 217.32.240.208 0.0.0.15 nexthop1 vrf services
+  721 permit ipv4 any 217.32.240.192 0.0.0.15 nexthop1 vrf services
+  731 permit ipv4 any 217.32.240.208 0.0.0.15 nexthop1 vrf services
+! 
+End
+

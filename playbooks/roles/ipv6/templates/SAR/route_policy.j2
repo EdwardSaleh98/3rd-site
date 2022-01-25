@@ -1,0 +1,22 @@
+{% set as_num = sites[inventory_hostname[0:3]][inventory_hostname]['as_num']%}
+route-policy V6_LAR_DIRECT_INBOUND
+  if community matches-any BB1-PREFIXES or community matches-any BB1-PREFIXES-SECONDARY then
+    done
+  endif
+end-policy
+!
+route-policy V6_LAR_DIRECT_OUTBOUND
+  if destination in v6_default_route then
+    done
+  endif
+end-policy
+
+route-policy v6-FAR-21cipp-announce
+! add the following 3 lines at the end
+ if community-matches any BB1-PREFIXES then
+   pass
+ elseif community matches-any BB1-PREFIXES-SECONDARY then
+   prepend as-path {{ as_numipp }} 1
+   pass
+ endif 
+!

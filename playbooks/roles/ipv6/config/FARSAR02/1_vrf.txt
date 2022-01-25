@@ -1,0 +1,17 @@
+ipv6 unicast-routing
+no ip nat service dns-v6
+
+ipv6 dhcp binding track ppp
+no ipv6 dhcp ppp terminate
+
+ipv6 dhcp pool BTB_V6
+ prefix-delegation aaa method-list BTB_RAD lifetime 62208000 3110400
+ accounting 21CRRC
+
+vrf definition BBONEDEFAULT
+ address-family ipv6
+  route-target export 65112:3
+  route-target import 65112:3
+ exit-address-family
+ !
+

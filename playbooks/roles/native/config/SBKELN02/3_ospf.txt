@@ -1,0 +1,12 @@
+!
+router ospf 101
+ area 0.0.0.0 authentication message-digest
+ router-id 192.168.100.22
+ nsf ietf
+ passive-interface default
+ no passive-interface Port-channel63.632
+ no passive-interface Port-channel64.632
+ network 217.32.240.65 0.0.0.0 area 0.0.0.0
+ network 217.32.240.67 0.0.0.0 area 0.0.0.0
+ network 192.168.100.22 0.0.0.0 area 0.0.0.0
+!

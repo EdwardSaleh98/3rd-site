@@ -1,0 +1,28 @@
+{% set as_num = sites[inventory_hostname[0:3]][inventory_hostname]['as_num']%}
+{% set lar01 = sites[inventory_hostname[0:3]][inventory_hostname]['lar01']%}
+{% set lar02 = sites[inventory_hostname[0:3]][inventory_hostname]['lar02']%}
+router bgp {{ as_num }}
+ address-family ipv6 vrf BBONEDEFAULT
+  redistribute connected
+  redistribute static
+  maximum-paths ibgp 2
+  neighbor {{ lar01 }} remote-as {{ as_num }}
+  neighbor {{ lar01 }} description ibgp ipv6 peer to LAR01 for BB1
+  neighbor {{ lar01 }} version 4
+  neighbor {{ lar01 }} timers 3 9
+  neighbor {{ lar01 }} activate
+  neighbor {{ lar01 }} update-source Loopback1100
+    neighbor {{ lar01 }} prefix-list V6_BB1_LAR_INBOUND in
+  neighbor {{ lar01 }} prefix-list V6_BB1_LAR_OUTBOUND out
+
+  neighbor {{ lar02 }} remote-as {{ as_num }}
+  neighbor {{ lar02 }} description ibgp ipv6 peer to LAR02 for BB1
+  neighbor {{ lar02 }} version 4
+  neighbor {{ lar02 }} timers 3 9
+  neighbor {{ lar02 }} activate
+  neighbor {{ lar02 }} update-source Loopback1100
+    neighbor {{ lar02 }} prefix-list V6_BB1_LAR_INBOUND in
+  neighbor {{ lar02 }} prefix-list V6_BB1_LAR_OUTBOUND out
+ exit-address-family
+!
+

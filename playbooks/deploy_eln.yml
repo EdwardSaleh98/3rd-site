@@ -1,0 +1,90 @@
+- name: Deploy ELN IPv6 Configuration
+  hosts: "{{ hostname }}"
+  connection: network_cli
+  gather_facts: false
+  vars_prompt:
+    - name: hostname
+      prompt: "Enter hostname"
+      private: no
+    - name: PW_Number
+      prompt: "Enter PW Reference"
+      private: no
+
+  tasks:
+
+    - name: Set variables
+      set_fact: 
+        backup_directory: "{{ playbook_dir }}/checks/backup_directory"
+        checks_dir: "{{ playbook_dir }}/checks"
+        config: "{{ playbook_dir }}/roles/ipv6/config"
+
+    - name: Create directory to store back up configuration
+      file: path={{ backup_directory }} state=directory
+
+    - name: Copying Running Configuration on {{ inventory_hostname }} for {{ PW_Number }}
+      cli_command:
+       command: show running-config
+      register: pre_running_conf
+    - copy:
+       content: "{{ pre_running_conf.stdout[0] }}"
+       dest: "{{ backup_directory }}/{{ PW_Number }}_{{ inventory_hostname }}_pre_running_config.txt"
+
+    - name: Running Pre Checks on {{ hostname }} for {{ PW_Number }}
+      ios_command:
+       commands:
+         - "{{ lookup('file', '{{ pre_checks }}/pre_checks.txt') }}"
+      register: generic_pre_conf
+
+    - name: Saving output for Pre Checks on {{ inventory_hostname }} for {{ PW_Number }}
+      copy:
+       content: "{{ generic_pre_conf.stdout[0] }}"
+       dest: "{{ backup_directory }}/{{ PW_Number }}-{{ inventory_hostname }}_pre_checks.txt"
+    - debug:
+         msg: "{{ generic_pre_conf.stdout_lines }}"
+    - pause:
+        prompt: "Happy? Yes = Return | No = CTRL+C A"
+
+    - name: Deploy VRF Configuration to {{ inventory_hostname }} for {{ PW_Number }}
+      cli_config:
+        config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/1_vrf.txt') }}"
+        commit: yes
+
+    - name: Deploy Interface Configuration to {{ inventory_hostname }} for {{ PW_Number }}
+      cli_config:
+        config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/2_interface.txt') }}"
+        commit: yes
+
+    - name: Deploy Prefix Configuration to {{ inventory_hostname }} for {{ PW_Number }}
+      cli_config:
+        config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/3_prefix.txt') }}"
+        commit: yes
+
+    - name: Deploy BGP Configuration to {{ inventory_hostname }} for {{ PW_Number }}
+      cli_config:
+        config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/4_bgp.txt') }}"
+        commit: yes
+
+    - name: Deploy OSPF Configuration to {{ inventory_hostname }} for {{ PW_Number }}
+      cli_config:
+        config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/5_ospf.txt') }}"
+        commit: yes
+    - name: Copying Running Configuration on {{ inventory_hostname }} for {{ PW_Number }}
+      cli_command:
+       command: show running-config
+      register: post_running_conf
+    - copy:
+       content: "{{ post_running_conf.stdout[0] }}"
+       dest: "{{ backup_directory }}/{{ PW_Number }}_{{ inventory_hostname }}_Post_Running_Config.txt"
+
+    - name: Running Post Checks on {{ inventory_hostname }} for {{ PW_Number }}
+      ios_command:
+       commands:
+         - "{{ lookup('file', '{{ post_checks }}/post_checks.txt') }}"
+      register: post_checks
+
+    - name: Saving output for Post Checks on {{ inventory_hostname }} for {{ PW_Number }}
+      copy:
+       content: "{{ post_checks.stdout[0] }}"
+       dest: "{{ backup_directory }}/{{ PW_Number }}-{{ inventory_hostname }}_post_checks.txt"
+    - debug:
+         msg: "{{ post_checks.stdout_lines }}"
