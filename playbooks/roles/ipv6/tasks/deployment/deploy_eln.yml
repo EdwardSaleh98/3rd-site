@@ -1,5 +1,4 @@
 ---
-  tasks:
     - name: set variables
       set_fact:
         backup_directory: "{{ playbook_dir }}/checks/backup_directory"
