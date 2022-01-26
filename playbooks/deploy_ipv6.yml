@@ -1,6 +1,6 @@
 - name: Generate Config
-  hosts: APAELN02
-  connection: local
+  hosts: FARELN02
+  connection: network_cli 
   gather_facts: false
 
   roles:
