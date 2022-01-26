@@ -1,16 +1,4 @@
 ---
-- name: Deploy IPv6 ELN Configuration
-  hosts: "{{ hostname }}"
-  connection: network_cli
-  gather_facts: false
-  vars_prompt:
-    - name: hostname
-      prompt: "Enter hostname"
-      private: no
-    - name: PW_Number
-      prompt: "Enter PW Reference"
-      private: no
-
   tasks:
     - name: set variables
       set_fact:
