@@ -1,0 +1,8 @@
+interface Bundle-Ether311.411 
+ ipv6 address 2a00:23a0:0125:5::3/12 
+ ipv6 nd suppress-ra
+!
+interface Bundle-Ether312.412 
+ ipv6 address 2a00:23a0:0125:6::2/127 
+ ipv6 nd suppress-ra
+!

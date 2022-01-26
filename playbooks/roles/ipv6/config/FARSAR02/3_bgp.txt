@@ -1,0 +1,24 @@
+
+router bgp 65112
+ neighbor 2a00:23a0:0125:7::2
+  remote-as 65112
+  timers 10 30
+  password 0 <password>
+  description Peer to LAR01 for BB1
+  address-family ipv6 unicast
+   route-policy V6_LAR_DIRECT_INBOUND in
+   route-policy V6_LAR_DIRECT_OUTBOUND out
+   soft-reconfiguration inbound always
+  !
+ !
+ neighbor 2a00:23a0:0125:8::2
+  remote-as 65112
+  timers 10 30
+  password 0 <password>
+  description Peer to LAR02 for BB1
+  address-family ipv6 unicast
+   route-policy V6_LAR_DIRECT_INBOUND in
+   route-policy V6_LAR_DIRECT_OUTBOUND out
+   soft-reconfiguration inbound always
+  !
+ !

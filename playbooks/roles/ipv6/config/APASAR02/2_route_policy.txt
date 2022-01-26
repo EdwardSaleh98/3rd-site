@@ -1,5 +1,3 @@
-{% set as_num = sites[inventory_hostname[0:3]][inventory_hostname]['as_num']%}
-{% set as_numipp = sites[inventory_hostname[0:3]][inventory_hostname]['as_numipp']%}
 route-policy V6_LAR_DIRECT_INBOUND
   if community matches-any BB1-PREFIXES or community matches-any BB1-PREFIXES-SECONDARY then
     done
@@ -17,7 +15,7 @@ route-policy v6-FAR-21cipp-announce
  if community-matches any BB1-PREFIXES then
    pass
  elseif community matches-any BB1-PREFIXES-SECONDARY then
-   prepend as-path {{ as_numipp }} 1
+   prepend as-path 65113 1
    pass
  endif 
 !

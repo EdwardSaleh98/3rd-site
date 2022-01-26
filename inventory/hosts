@@ -22,6 +22,12 @@ all:
             COLIDM:
             COLANA:
 
+        APARSN:
+          children:
+            APAHLAR:
+            APAELN:
+            APASAR:
+
         FARRSN:
           children:
             FARLAR:
@@ -69,19 +75,21 @@ all:
             COLSAR:
             FARSAR:
             SBKSAR:
+            APASAR:
 
         LAR:
           children:
             COLLAR:
             FARLAR:
             SBKLAR:
+            APAHLAR:
 
         ELN:
           children:
             COLELN:
             FARELN:
             SBKELN:
-
+            APAELN:
         LNS:
           children:
             COLLNS:
@@ -121,6 +129,10 @@ all:
         SBKSAR:
           hosts:
             SBKSAR0[1:2]:
+      
+        APASAR:
+          hosts:
+            APASAR0[1:2]:
 
 # LAR
 
@@ -135,6 +147,10 @@ all:
         SBKLAR:
           hosts:
             SBKLAR0[1:2]:
+        
+        APAHLAR:
+          hosts:
+            APAHLAR0[1:2]:
 
 # ELN
 
@@ -149,6 +165,10 @@ all:
         SBKELN:
           hosts:
             SBKELN0[1:3]:
+
+        APAELN:
+          hosts:
+            APAELN02:
 
 #LNS
 

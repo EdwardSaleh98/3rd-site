@@ -1,0 +1,98 @@
+router bgp 65212 
+ neighbor-group V6_BB1_LNS_PEER
+   remote-as 65212
+   timers 3 9
+   update-source Loopback1100
+   address-family ipv6 unicast
+    route-policy V6_BB1_LNS_INBOUND in
+    route-reflector-client
+    route-policy V6_BB1_LNS_OUTBOUND out
+    soft-reconfiguration inbound always
+  !
+ vrf BBONEDEFAULT
+  rd 65212:1100
+  address-family ipv6 unicast
+   maximum-paths ebgp 4
+     fdf8:23d0:2d00::/40
+     fdf8:23d0:2c00::/40
+     fdf8:23d0:2e00::/40 
+!
+ neighbor fdf8:23a0:0125:9::3 
+  use neighbor-group V6_BB1_LNS_PEER
+  description ibgp ipv6 peer to ELN02
+ !
+ neighbor fdf8:23a0:0125:9::4
+  use neighbor-group V6_BB1_LNS_PEER
+  description ibgp ipv6 peer to ELN03
+  !
+!
+router bgp 65212
+ vrf BBONEDEFAULT
+  !
+  neighbor fdf8:23a0:0125:5::3 
+   remote-as 65212
+   timers 10 30
+   password 0 <password>
+   description eBGP Peer to SAR01 for BB1
+   address-family ipv6 unicast
+    send-community-ebgp
+    route-policy V6_SAR_DIRECT_INBOUND in
+    route-policy V6_SAR_DIRECT_OUTBOUND out
+    soft-reconfiguration inbound always
+  !
+  neighbor fdf8:23a0:0125:7::3
+   remote-as 65212
+   timers 10 30
+   password 0 <password>
+   description eBGP Peer to SAR02 for BB1
+   address-family ipv6 unicast
+    send-community-ebgp
+    route-policy V6_SAR_DIRECT_INBOUND in 
+    route-policy V6_SAR_DIRECT_OUTBOUND out
+    soft-reconfiguration inbound always
+  !
+ !
+
+router bgp 65212
+ vrf BBONEDEFAULT  
+  !
+  neighbor fdf8:23a0:0125:9::1
+   remote-as 65212 
+   timers 10 30
+   description iBGP ipv6 Peer to local LAR for BB1
+   address-family ipv6 unicast
+    route-policy V6_BB1_LAR_INBOUND in
+    route-policy V6_BB1_LAR_OUTBOUND out
+    soft-reconfiguration inbound always
+ !
+!
+router bgp 65212 
+ vrf BBONEDEFAULT
+  !
+  neighbor fdf8:23a0:0125:a::3
+   remote-as 65211
+   timers 10 30
+   description BB1 Intersite IPv6 peer COLLAR
+   password clear <password>
+   address-family ipv6 unicast
+    route-policy V6_BB1_DWDM_INBOUND in
+    route-policy V6_BB1_DWDM_OUTBOUND out
+    soft-reconfiguration inbound always
+   !
+  !
+router bgp 65212 
+ vrf BBONEDEFAULT
+  !
+  neighbor fdf8:23a0:0115:c::2
+   remote-as 65213
+   timers 10 30
+   description BB1 Intersite IPv6 peer SBKLAR
+   password clear <password>
+   address-family ipv6 unicast
+    route-policy V6_BB1_DWDM_INBOUND in
+    route-policy V6_BB1_DWDM_OUTBOUND out
+    soft-reconfiguration inbound always
+   !
+  !
+ !
+!

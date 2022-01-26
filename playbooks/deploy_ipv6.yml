@@ -1,7 +1,8 @@
 - name: Generate Config
-  hosts: APASAR01, APASAR02 
+  hosts: APAELN02
   connection: local
   gather_facts: false
- 
+
   roles:
     - ipv6
+
