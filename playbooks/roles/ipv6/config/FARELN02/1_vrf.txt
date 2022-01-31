@@ -1,5 +1,4 @@
 ipv6 unicast-routing
-no ip nat service dns-v6
 
 ipv6 dhcp binding track ppp
 no ipv6 dhcp ppp terminate
