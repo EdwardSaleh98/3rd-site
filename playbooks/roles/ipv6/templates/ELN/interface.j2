@@ -11,13 +11,6 @@ interface Virtual-Template1
  no ipv6 pim
  ipv6 traffic-filter V6_Infrastructure_Restriction in
 !
-{% set as_num = sites[inventory_hostname[0:3]][inventory_hostname]['as_num']%}
-vrf definition BBONEDEFAULT
- address-family ipv6
-  route-target export {{ as_num }}:3
-  route-target import {{ as_num }}:3
- exit-address-family
- !
 {% for interface in sites[inventory_hostname[0:3]][inventory_hostname]['interfaces'] %}
 {% set ip = sites[inventory_hostname[0:3]][inventory_hostname]['interfaces'][interface]['ip'] %}
 {% if interface.startswith('lo') %}
