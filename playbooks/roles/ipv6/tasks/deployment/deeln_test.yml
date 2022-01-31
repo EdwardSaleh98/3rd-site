@@ -1,0 +1,35 @@
+---
+    - name: set variables
+      set_fact:
+        backup_directory: "{{ playbook_dir }}/checks/backup_directory"
+        config: "{{ playbook_dir }}/roles/ipv6/config"
+
+    - name: Create directory to store back up configuration
+      file: path={{ backup_directory }} state=directory
+
+       
+    - name: Deploy VRF Configuration
+      cli_config:
+        config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/1_vrf.txt') }}"
+        commit: yes
+
+    - name: Deploy Interface Configuration 
+      cli_config:
+        config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/2_interface.txt') }}"
+        commit: yes
+
+    - name: Deploy Prefix Configuration 
+      cli_config:
+        config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/3_prefix.txt') }}"
+        commit: yes
+
+    - name: Deploy BGP Configuation
+      cli_config:
+        config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/4_bgp.txt') }}"
+        commit: yes
+
+    - name: Deploy OSPF Configuration 
+      cli_config:
+        config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/5_ospf.txt') }}"
+        commit: yes
+

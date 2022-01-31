@@ -6,18 +6,18 @@
     state: directory
   tags: eln, lar, sar
 
-- name: Generate LAR Config
-  import_tasks: eln.yml
+- name: Generate ELN Config
+  import_tasks: generate/eln.yml
   tags: eln
 
 - name: Generate LAR Config
-  import_tasks: lar.yml
+  import_tasks: generate/lar.yml
   tags: lar 
 
-- name: Generate LAR Config
-  import_tasks: sar.yml
+- name: Generate SAR Config
+  import_tasks: generate/sar.yml
   tags: sar
 
-- name: deploy eln 
+- name: Deploy ELN 
   import_tasks: deployment/deploy_eln.yml
   tags: deploy_eln

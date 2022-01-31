@@ -7,20 +7,20 @@
     - name: Create directory to store back up configuration
       file: path={{ backup_directory }} state=directory
 
-    - name: Copying Running Configuration on {{ inventory_hostname }} for {{ PW_Number }}
+    - name: Copying Running Configuration 
       cli_command:
        command: show running-config
       register: pre_running_conf
     - copy:
        content: "{{ pre_running_conf.stdout[0] }}"
        dest: "{{ backup_directory }}/{{ PW_Number }}_{{ inventory_hostname }}_pre_running_config.txt"
-    - name: Running Pre Checks on {{ hostname }} for {{ PW_Number }}
+    - name: Running Pre Checks 
       ios_command:
        commands:
          - "{{ lookup('file', '{{ pre_checks }}/pre_checks.txt') }}"
       register: generic_pre_conf
 
-    - name: Saving output for Pre Checks on {{ inventory_hostname }} for {{ PW_Number }}
+    - name: Saving output for Pre Checks
       copy:
        content: "{{ generic_pre_conf.stdout[0] }}"
        dest: "{{ backup_directory }}/{{ PW_Number }}-{{ inventory_hostname }}_pre_checks.txt"
@@ -29,31 +29,73 @@
     - pause:
         prompt: "Happy? Yes = Return | No = CTRL+C A"
 
-    - name: Deploy VRF Configuration to {{ inventory_hostname }} for {{ PW_Number }}
+    - name: Pre-check VRF Config
+      cli_command:
+        command: "show vrf ipv6"
+      register: vrf
+    - assert:
+        that:
+          - "'' in item.stdout"
+        success_msg: "No VRF Configuration exists. Continue"
+        fail_msg: "Configuration already in place"
+      with_items:
+        - "{{ vrf.results }}"
+      ignore_errors: True
+       
+    - name: Deploy VRF Configuration
       cli_config:
         config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/1_vrf.txt') }}"
         commit: yes
 
-    - name: Deploy Interface Configuration to {{ inventory_hostname }} for {{ PW_Number }}
+    - name: Check VRF Config
+      cli_command:
+        command: "show vrf ipv6"
+      register: vrf_post
+    - assert:
+        that:
+          - "'BBONEDEFAULT' in item.stdout"
+        success_msg: "VRF Configuration exists. Continue"
+        fail_msg: "Configuration not deployed"
+      with_items:
+        - "{{ vrf_post.results }}"
+      ignore_errors: True
+
+    - set_fact:
+        int_list: |
+          {%- set list = [] -%}
+          {%- for interface in sites[inventory_hostname[0:3]][inventory_hostname[3:8]]['interfaces'] -%}
+          {{ list.append(interface.strip('\n'))}}
+          {%- endfor -%}
+          {{ list }}
+  
+    - name: Pre-check Interface Configuration
+      cli_command:
+        command: "show run interface {{ item }}"
+      with_items:
+        - "{{int_list}}"
+    - assert:
+        that:
+          - 
+    - name: Deploy Interface Configuration 
       cli_config:
         config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/2_interface.txt') }}"
         commit: yes
 
-    - name: Deploy Prefix Configuration to {{ inventory_hostname }} for {{ PW_Number }}
+    - name: Deploy Prefix Configuration 
       cli_config:
         config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/3_prefix.txt') }}"
         commit: yes
 
-    - name: Deploy BGP Configuration to {{ inventory_hostname }} for {{ PW_Number }}
+    - name: Deploy BGP Configuation
       cli_config:
         config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/4_bgp.txt') }}"
         commit: yes
 
-    - name: Deploy OSPF Configuration to {{ inventory_hostname }} for {{ PW_Number }}
+    - name: Deploy OSPF Configuration 
       cli_config:
         config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/5_ospf.txt') }}"
         commit: yes
-    - name: Copying Running Configuration on {{ inventory_hostname }} for {{ PW_Number }}
+    - name: Copying Running Configuration 
       cli_command:
        command: show running-config
       register: post_running_conf
@@ -61,13 +103,13 @@
        content: "{{ post_running_conf.stdout[0] }}"
        dest: "{{ backup_directory }}/{{ PW_Number }}_{{ inventory_hostname }}_Post_Running_Config.txt"
 
-    - name: Running Post Checks on {{ inventory_hostname }} for {{ PW_Number }}
+    - name: Running Post Checks
       ios_command:
        commands:
          - "{{ lookup('file', '{{ post_checks }}/post_checks.txt') }}"
       register: post_checks
 
-    - name: Saving output for Post Checks on {{ inventory_hostname }} for {{ PW_Number }}
+    - name: Saving output for Post Checks 
       copy:
        content: "{{ post_checks.stdout[0] }}"
        dest: "{{ backup_directory }}/{{ PW_Number }}-{{ inventory_hostname }}_post_checks.txt"
