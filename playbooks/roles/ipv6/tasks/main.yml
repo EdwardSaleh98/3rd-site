@@ -19,5 +19,5 @@
   tags: sar
 
 - name: Deploy ELN 
-  import_tasks: deployment/deploy_eln.yml
+  import_tasks: deployment/deeln_test.yml
   tags: deploy_eln
