@@ -1,9 +1,9 @@
 {% set v4lo = sites[inventory_hostname[0:3]][inventory_hostname]['v4lo']%}
-router ospfv3 1100 vrf BBONEDEFAULT
+router ospfv3 1100
  router-id {{ v4lo }}
  nsr
  !
- address-family ipv6 unicast
+ address-family ipv6 unicast vrf BBONEDEFAULT
   passive-interface default
 {% for interface in sites[inventory_hostname[0:3]][inventory_hostname]['interfaces'] %}
 {% if interface.startswith('po') %}
