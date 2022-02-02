@@ -1,5 +1,7 @@
 ---
 
+
+
 - name: Create directory for config
   file:
     path: "{{ role_path }}/config/{{ inventory_hostname }}/"
@@ -19,5 +21,5 @@
   tags: sar
 
 - name: Deploy ELN 
-  import_tasks: deployment/deeln_test.yml
-  tags: deploy_eln
+  import_tasks: deployment/deploy_eln.yml
+  tags: test

@@ -54,102 +54,10 @@
       ignore_errors: True
 
 
-
-    - set_fact:
-        po_list: |
-          {%- set list = [] -%}
-          {%- for interface in sites[inventory_hostname[0:3]][inventory_hostname]['interfaces'] -%}
-          {%- if interface.startswith('po') -%}
-          {{ list.append(interface.strip('\n'))}}
-          {%- endif -%}
-          {%- endfor -%}
-          {{ list }}
-
-    - set_fact:
-        lo_list: |
-          {%- set list = [] -%}
-          {%- for interface in sites[inventory_hostname[0:3]][inventory_hostname]['interfaces'] -%}
-          {%- if interface.startswith('lo') -%}
-          {{ list.append(interface.strip('\n'))}}
-          {%- endif -%}
-          {%- endfor -%}
-          {{ list }}
-        
-    - name: Pre-check Looback interface configuration
-      cli_command:
-        command: "show run interface {{ item }}"
-      with_items:
-        - "{{lo_list}}"
-      register: lo_pre
-    - assert:
-        that:
-          - "'ipv6 address' not in item.stdout"
-          - "'ospfv3 1100 ipv6 area 0.0.0.0' not in item.stdout"
-        success_msg: "No IPv6 configuration deployed on Loopback. Continue"
-        fail_msg: "IPv6 configuration already deployed"
-      with_items: 
-        - "{{ lo_pre.results }}"
-      ignore_errors: True
-
-    - name: Pre-check port-channel interface configuration
-      cli_command:
-        command: "show run interface {{ item }}"
-      with_items:
-        - "{{po_list}}"
-      register: po_pre
-    - assert:
-        that:
-          - "'ipv6 address' not in item.stdout"
-          - "'ipv6 nd ra suppress' not in item.stdout"
-          - "'ospfv3 1100 ipv6 area 0.0.0.0' not in item.stdout"
-          - "'ospfv3 cost 200' not in item.stdout"
-        success_msg: "No IPv6 configuration deployed on Port-Channels. Continue"
-        fail_msg: "IPv6 configuration already deployed on Port-Channels"
-      with_items: 
-        - "{{ po_pre.results }}"
-      ignore_errors: True
-
     - name: Deploy Interface Configuration
       cli_config:
         config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/2_interface.txt') }}"
         commit: yes
-
-    - name: Post-check Looback interface configuration
-      cli_command:
-        command: "show run interface {{ item }}"
-      with_items:
-        - "{{lo_list}}"
-      register: lo_post
-    - assert:
-        that:
-          - "'ipv6 address' in item.stdout"
-          - "'ospfv3 1100 ipv6 area 0.0.0.0' in item.stdout"
-        success_msg: "IPv6 configuration deployed on Loopback. Continue"
-        fail_msg: "No IPv6 configuration deployed"
-      with_items: 
-        - "{{ lo_post.results }}"
-      ignore_errors: True
-
-    - name: Pre-check port-channel interface configuration
-      cli_command:
-        command: "show run interface {{ item }}"
-      with_items:
-        - "{{po_list}}"
-      register: po_post
-    - assert:
-        that:
-          - "'ipv6 address' in item.stdout"
-          - "'ipv6 nd ra suppress' in item.stdout"
-          - "'ospfv3 1100 ipv6 area 0.0.0.0' in item.stdout"
-          - "'ospfv3 cost 200' in item.stdout"
-        success_msg: "IPv6 configuration deployed on Port-Channels. Continue"
-        fail_msg: "No IPv6 configuration deployed on Port-Channels"
-      with_items: 
-        - "{{ po_post.results }}"
-      ignore_errors: True
-
-
-
 
     - name: Pre-check pool configuration
       cli_command:
@@ -200,8 +108,6 @@
         fail_msg: "IPv6 prefix list present."
       ignore_errors: True
 
-
-
     - name: Pre-check BGP configuration
       cli_command:
         command: "show running-config | i address family ipv6 vrf BBONEDEFAULT"
@@ -229,8 +135,6 @@
         fail_msg: "IPv6 BGP not deployed."
       ignore_errors: True    
 
-
-
     - name: Pre-check OSPF configuration
       cli_command:
         command: "show ospfv3 ipv6 vrf BBONEDEFAULT"
@@ -257,8 +161,6 @@
         success_msg: "OSPFv3 deployed. Continue"
         fail_msg: "OSPFv3 not deployed."
       ignore_errors: True
-
-
 
     - name: Copying Running Configuration
       cli_command:

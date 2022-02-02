@@ -1,5 +1,5 @@
 - name: Generate Config
-  hosts: FARELN02 
+  hosts: FARLAR02 
   connection: local
   gather_facts: false
  
