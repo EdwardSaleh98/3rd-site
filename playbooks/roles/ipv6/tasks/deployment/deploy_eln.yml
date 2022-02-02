@@ -1,64 +1,66 @@
 ---
-
-    - shell:
-        cmd: date +%H:%M
-      register: time
-
     - name: Set directory variables
       set_fact:
         backup_directory: "{{ playbook_dir }}/checks/backup_directory"
         config: "{{ playbook_dir }}/roles/ipv6/config"
 
-    - name: Create directory to store back up configuration
+    - name: Create directories
       file: 
         path: "{{ backup_directory }}"
         state: directory
 
-    - name: Copying Running Configuration
+    - name: Copying running-configuration
       cli_command:
        command: show running-config
       register: pre_running_conf
+
     - copy:
        content: "{{ pre_running_conf.stdout[0] }}"
-       dest: "{{ backup_directory }}/{{ time }}_{{ inventory_hostname }}_pre_running_config.txt"
+       dest: "{{ backup_directory }}/{{ inventory_hostname }}_pre_running_config.txt"
 
-    - name: Check IPv6 VRF config doesn't exist
+    - name: Pre-check VRF
       cli_command:
-        command: "show vrf ipv6"
+        command: "show vrf {{ item }}"
+      with_items:
+        - "brief"
+        - "detail"
       register: vrf
+
     - assert:
         that:
-          - "'' in item.stdout"
+          - "'BBONEDEFAULT' not in item.stdout"
         success_msg: "No VRF Configuration exists. Continue"
         fail_msg: "Configuration already in place"
       with_items:
         - "{{ vrf.results }}"
       ignore_errors: True
 
-    - name: Deploy VRF Configuration
+    - name: Deploy VRF 
       cli_config:
         config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/1_vrf.txt') }}"
         commit: yes
 
-    - name: Check VRF Config
+    - name: Post-check VRF
       cli_command:
-        command: "show vrf ipv6"
+        command: "show vrf {{ item }}"
+      with_items:
+        - "brief"
+        - "detail"
       register: vrf_post
+
     - assert:
         that:
-          - "'BBONEDEFAULT' in item.stdout"
+          - "'ipv6' in item.stdout"
         success_msg: "VRF Configuration exists. Continue"
         fail_msg: "Configuration not deployed"
       with_items:
         - "{{ vrf_post.results }}"
       ignore_errors: True
 
-
-
     - set_fact:
         po_list: |
           {%- set list = [] -%}
-          {%- for interface in sites[inventory_hostname[0:3]][inventory_hostname]['interfaces'] -%}
+          {%- for interface in sites[inventory_hostname[0:3]][inventory_hostname[3:8]]['interfaces'] -%}
           {%- if interface.startswith('po') -%}
           {{ list.append(interface.strip('\n'))}}
           {%- endif -%}
@@ -68,19 +70,20 @@
     - set_fact:
         lo_list: |
           {%- set list = [] -%}
-          {%- for interface in sites[inventory_hostname[0:3]][inventory_hostname]['interfaces'] -%}
+          {%- for interface in sites[inventory_hostname[0:3]][inventory_hostname[3:8]]['interfaces'] -%}
           {%- if interface.startswith('lo') -%}
           {{ list.append(interface.strip('\n'))}}
           {%- endif -%}
           {%- endfor -%}
           {{ list }}
         
-    - name: Pre-check Looback interface configuration
+    - name: Pre-check looback
       cli_command:
         command: "show run interface {{ item }}"
       with_items:
         - "{{lo_list}}"
       register: lo_pre
+
     - assert:
         that:
           - "'ipv6 address' not in item.stdout"
@@ -91,7 +94,7 @@
         - "{{ lo_pre.results }}"
       ignore_errors: True
 
-    - name: Pre-check port-channel interface configuration
+    - name: Pre-check port-channel 
       cli_command:
         command: "show run interface {{ item }}"
       with_items:
@@ -109,12 +112,12 @@
         - "{{ po_pre.results }}"
       ignore_errors: True
 
-    - name: Deploy Interface Configuration
+    - name: Deploy interface 
       cli_config:
         config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/2_interface.txt') }}"
         commit: yes
 
-    - name: Post-check Looback interface configuration
+    - name: Post-check looback 
       cli_command:
         command: "show run interface {{ item }}"
       with_items:
@@ -130,7 +133,7 @@
         - "{{ lo_post.results }}"
       ignore_errors: True
 
-    - name: Pre-check port-channel interface configuration
+    - name: Post-check port-channel 
       cli_command:
         command: "show run interface {{ item }}"
       with_items:
@@ -148,37 +151,37 @@
         - "{{ po_post.results }}"
       ignore_errors: True
 
-
-
-
-    - name: Pre-check pool configuration
+    - name: Pre-check pool
       cli_command:
         command: "show ipv6 local pool"
       register: pool_pre
+
     - assert:
         that:
-          - "'' in pool_pre.stdout"
+          - "'' in item.stdout"
         success_msg: "IPv6 pool not deployed. Continue"
         fail_msg: "IPv6 pool present."
+      with_items: 
+        - "{{ pool_pre.results }}"      
       ignore_errors: True
 
-    - name: Pre-check prefix-list configuration
+    - name: Pre-check prefix-list
       cli_command:
         command: "show ipv6 prefix-list"
       register: prefix_pre
     - assert:
         that:
           - "'' in prefix_pre.stdout"
-        success_msg: "IPv6 Prefix-List deployed. Continue"
+        success_msg: "No IPv6 Prefix-List. Continue"
         fail_msg: "IPv6 prefix list present."
       ignore_errors: True
 
-    - name: Deploy Prefix Configuration
+    - name: Deploy prefix-list
       cli_config:
         config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/3_prefix.txt') }}"
         commit: yes
 
-    - name: Post-check pool configuration
+    - name: Post-check pool 
       cli_command:
         command: "show ipv6 local pool"
       register: pool_post
@@ -189,7 +192,7 @@
         fail_msg: "IPv6 Pool not present."
       ignore_errors: True
 
-    - name: Post-check prefix-list configuration
+    - name: Post-check prefix-list 
       cli_command:
         command: "show ipv6 prefix-list"
       register: prefix_post
@@ -200,9 +203,7 @@
         fail_msg: "IPv6 prefix list present."
       ignore_errors: True
 
-
-
-    - name: Pre-check BGP configuration
+    - name: Pre-check BGP 
       cli_command:
         command: "show running-config | i address family ipv6 vrf BBONEDEFAULT"
       register: bgp_pre
@@ -213,12 +214,12 @@
         fail_msg: "IPv6 BGP already deployed."
       ignore_errors: True
 
-    - name: Deploy BGP Configuation
+    - name: Deploy BGP 
       cli_config:
         config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/4_bgp.txt') }}"
         commit: yes
 
-    - name: Post-check BGP configuration
+    - name: Post-check BGP n
       cli_command:
         command: "show running-config | i address family ipv6 vrf BBONEDEFAULT"
       register: bgp_post
@@ -229,9 +230,7 @@
         fail_msg: "IPv6 BGP not deployed."
       ignore_errors: True    
 
-
-
-    - name: Pre-check OSPF configuration
+    - name: Pre-check OSPF 
       cli_command:
         command: "show ospfv3 ipv6 vrf BBONEDEFAULT"
       register: ospf_pre
@@ -242,12 +241,12 @@
         fail_msg: "OSPFv3 already deployed."
       ignore_errors: True
 
-    - name: Deploy OSPF Configuration
+    - name: Deploy OSPF 
       cli_config:
         config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/5_ospf.txt') }}"
         commit: yes
 
-    - name: Post-check OSPF configuration
+    - name: Post-check OSPF 
       cli_command:
         command: "show ospfv3 ipv6 vrf BBONEDEFAULT"
       register: ospf_post
@@ -258,9 +257,7 @@
         fail_msg: "OSPFv3 not deployed."
       ignore_errors: True
 
-
-
-    - name: Copying Running Configuration
+    - name: Copying running-configuration
       cli_command:
        command: show running-config
       register: post_running_conf
