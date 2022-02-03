@@ -23,7 +23,7 @@
         command: "show vrf {{ item }}"
       with_items:
         - "brief"
-      register: vrf_post.results
+      register: vrf_pre.results
 
     - assert:
         that:
@@ -58,7 +58,7 @@
     - set_fact:
         po_list: |
           {%- set list = [] -%}
-          {%- for interface in sites[inventory_hostname[0:3]][inventory_hostname[3:8]]['interfaces'] -%}
+          {%- for interface in sites[inventory_hostname[0:3]][inventory_hostname]['interfaces'] -%}
           {%- if interface.startswith('po') -%}
           {{ list.append(interface.strip('\n'))}}
           {%- endif -%}
@@ -68,7 +68,7 @@
     - set_fact:
         lo_list: |
           {%- set list = [] -%}
-          {%- for interface in sites[inventory_hostname[0:3]][inventory_hostname[3:8]]['interfaces'] -%}
+          {%- for interface in sites[inventory_hostname[0:3]][inventory_hostname]['interfaces'] -%}
           {%- if interface.startswith('lo') -%}
           {{ list.append(interface.strip('\n'))}}
           {%- endif -%}
