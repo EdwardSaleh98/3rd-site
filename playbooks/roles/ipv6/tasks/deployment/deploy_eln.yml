@@ -23,16 +23,15 @@
         command: "show vrf {{ item }}"
       with_items:
         - "brief"
-        - "detail"
-      register: vrf
+      register: vrf_post.results
 
     - assert:
         that:
-          - "'BBONEDEFAULT' not in item.stdout"
+          - "'ipv6' not in item.stdout"
         success_msg: "No VRF Configuration exists. Continue"
         fail_msg: "Configuration already in place"
       with_items:
-        - "{{ vrf.results }}"
+        - "{{ vrf_pre.results }}"
       ignore_errors: True
 
     - name: Deploy VRF 
@@ -45,7 +44,6 @@
         command: "show vrf {{ item }}"
       with_items:
         - "brief"
-        - "detail"
       register: vrf_post
 
     - assert:
