@@ -6,7 +6,7 @@ router bgp {{ as_num }}
  neighbor {{ lar01 }}
   remote-as {{ as_num }}
   timers 10 30
-  password 0 <password>
+  password 0 qwsdcfgvtszdeftg 
   description Peer to LAR01 for BB1
   address-family ipv6 unicast
    route-policy V6_LAR_DIRECT_INBOUND in
@@ -17,7 +17,7 @@ router bgp {{ as_num }}
  neighbor {{ lar02 }}
   remote-as {{ as_num }}
   timers 10 30
-  password 0 <password>
+  password 0 qwsdcfgvtszdeftg 
   description Peer to LAR02 for BB1
   address-family ipv6 unicast
    route-policy V6_LAR_DIRECT_INBOUND in

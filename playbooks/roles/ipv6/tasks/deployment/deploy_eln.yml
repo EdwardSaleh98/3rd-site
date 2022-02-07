@@ -261,5 +261,5 @@
       register: post_running_conf
     - copy:
        content: "{{ post_running_conf.stdout[0] }}"
-       dest: "{{ backup_directory }}/{{ time }}_{{ inventory_hostname }}_Post_Running_Config.txt"
+       dest: "{{ backup_directory }}/{{ inventory_hostname }}_Post_Running_Config.txt"
 

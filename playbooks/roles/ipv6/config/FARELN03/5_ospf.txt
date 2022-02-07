@@ -1,8 +1,8 @@
-router ospfv3 1100 vrf BBONEDEFAULT
+router ospfv3 1100
  router-id 192.168.112.5
  nsr
  !
- address-family ipv6 unicast
+ address-family ipv6 unicast vrf BBONEDEFAULT
   passive-interface default
   no passive-interface Port-channel54.1543
   no passive-interface Port-channel53.1533

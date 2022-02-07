@@ -32,7 +32,7 @@ router bgp 65212
   neighbor 2a00:23a0:0125:5::3 
    remote-as 65212
    timers 10 30
-   password 0 <password>
+   password 0 qwsdcfgvtszdeftg 
    description eBGP Peer to SAR01 for BB1
    address-family ipv6 unicast
     send-community-ebgp
@@ -43,7 +43,7 @@ router bgp 65212
   neighbor 2a00:23a0:0125:7::3
    remote-as 65212
    timers 10 30
-   password 0 <password>
+   password 0 qwsdcfgvtszdeftg 
    description eBGP Peer to SAR02 for BB1
    address-family ipv6 unicast
     send-community-ebgp

@@ -41,7 +41,7 @@ router bgp {{ as_num }}
   neighbor {{ sar01 }} 
    remote-as {{ as_num }}
    timers 10 30
-   password 0 <password>
+   password 0 qwsdcfgvtszdeftg 
    description eBGP Peer to SAR01 for BB1
    address-family ipv6 unicast
     send-community-ebgp
@@ -52,7 +52,7 @@ router bgp {{ as_num }}
   neighbor {{ sar02 }}
    remote-as {{ as_num }}
    timers 10 30
-   password 0 <password>
+   password 0 qwsdcfgvtszdeftg 
    description eBGP Peer to SAR02 for BB1
    address-family ipv6 unicast
     send-community-ebgp
