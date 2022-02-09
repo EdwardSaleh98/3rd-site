@@ -1,8 +1,4 @@
-interface Bundle-Ether321.421 
- ipv6 address fdf8:23a0:0125:6::2/127 
- ipv6 nd suppress-ra
-!
-interface Bundle-Ether322.422 
- ipv6 address fdf8:23a0:0125:8::3/127 
+interface Bundle-Ether88.422 
+ ipv6 address fdf8:23a0:0125:88888888::3/127 
  ipv6 nd suppress-ra
 !

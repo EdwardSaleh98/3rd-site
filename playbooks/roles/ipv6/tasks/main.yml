@@ -20,6 +20,13 @@
   import_tasks: generate/sar.yml
   tags: sar
 
+- name: Assemble and generate device complete configuration
+  assemble:
+    src: "{{ role_path }}/config/{{inventory_hostname }}/"
+    dest: "{{ role_path }}/config/{{ inventory_hostname }}/{{inventory_hostname }}_complete.conf"
+    regexp: "_*.txt"
+  tags: eln, lar, sar
+
 - name: Deploy ELN 
   import_tasks: deployment/deploy_eln.yml
   tags: test

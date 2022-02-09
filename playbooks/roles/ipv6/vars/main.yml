@@ -259,10 +259,8 @@ sites:
     APASAR01:
       as_num: 65112
       interfaces:
-        be311.411:
-          ip: fdf8:23a0:0125:5::3/12
-        be312.412:
-          ip: fdf8:23a0:0125:6::2/127
+        be88.411:
+          ip: fdf8:23a0:0125:5::3/127
       lar01: fdf8:23a0:0125:5::2
       lar02: fdf8:23a0:0125:6::2
       as_numipp: 65113
@@ -270,10 +268,8 @@ sites:
     APASAR02:
       as_num: 65112
       interfaces:
-        be321.421:
-          ip: fdf8:23a0:0125:6::2/127
-        be322.422:
-          ip: fdf8:23a0:0125:8::3/127
+        be88.422:
+          ip: fdf8:23a0:0125:88888888::3/127
       lar01: fdf8:23a0:0125:7::2
       lar02: fdf8:23a0:0125:8::2
       as_numipp: 65113

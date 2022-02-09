@@ -22,7 +22,7 @@
       cli_command:
         command: "show vrf {{ item }}"
       with_items:
-        - "brief"
+        - "BBONEDEFAULT"
       register: vrf_pre
 
     - assert:

@@ -9,13 +9,4 @@ route-policy V6_LAR_DIRECT_OUTBOUND
     done
   endif
 end-policy
-
-route-policy v6-FAR-21cipp-announce
-! add the following 3 lines at the end
- if community-matches any BB1-PREFIXES then
-   pass
- elseif community matches-any BB1-PREFIXES-SECONDARY then
-   prepend as-path 65113 1
-   pass
- endif 
 !
