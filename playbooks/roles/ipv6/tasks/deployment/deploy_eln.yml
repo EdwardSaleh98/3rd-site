@@ -5,7 +5,7 @@
         config: "{{ playbook_dir }}/roles/ipv6/config"
 
     - name: Create directories
-      file: 
+      file:
         path: "{{ backup_directory }}"
         state: directory
 
@@ -34,7 +34,7 @@
         - "{{ vrf_pre.results }}"
       ignore_errors: True
 
-    - name: Deploy VRF 
+    - name: Deploy VRF
       cli_config:
         config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/1_vrf.txt') }}"
         commit: yes
@@ -74,7 +74,7 @@
           {%- endif -%}
           {%- endfor -%}
           {{ list }}
-        
+
     - name: Pre-check looback
       cli_command:
         command: "show run interface {{ item }}"
@@ -88,11 +88,11 @@
           - "'ospfv3 1100 ipv6 area 0.0.0.0' not in item.stdout"
         success_msg: "No IPv6 configuration deployed on Loopback. Continue"
         fail_msg: "IPv6 configuration already deployed"
-      with_items: 
+      with_items:
         - "{{ lo_pre.results }}"
       ignore_errors: True
 
-    - name: Pre-check port-channel 
+    - name: Pre-check port-channel
       cli_command:
         command: "show run interface {{ item }}"
       with_items:
@@ -106,16 +106,16 @@
           - "'ospfv3 cost 200' not in item.stdout"
         success_msg: "No IPv6 configuration deployed on Port-Channels. Continue"
         fail_msg: "IPv6 configuration already deployed on Port-Channels"
-      with_items: 
+      with_items:
         - "{{ po_pre.results }}"
       ignore_errors: True
 
-    - name: Deploy interface 
+    - name: Deploy interface
       cli_config:
         config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/2_interface.txt') }}"
         commit: yes
 
-    - name: Post-check looback 
+    - name: Post-check looback
       cli_command:
         command: "show run interface {{ item }}"
       with_items:
@@ -127,11 +127,11 @@
           - "'ospfv3 1100 ipv6 area 0.0.0.0' in item.stdout"
         success_msg: "IPv6 configuration deployed on Loopback. Continue"
         fail_msg: "No IPv6 configuration deployed"
-      with_items: 
+      with_items:
         - "{{ lo_post.results }}"
       ignore_errors: True
 
-    - name: Post-check port-channel 
+    - name: Post-check port-channel
       cli_command:
         command: "show run interface {{ item }}"
       with_items:
@@ -145,13 +145,15 @@
           - "'ospfv3 cost 200' in item.stdout"
         success_msg: "IPv6 configuration deployed on Port-Channels. Continue"
         fail_msg: "No IPv6 configuration deployed on Port-Channels"
-      with_items: 
+      with_items:
         - "{{ po_post.results }}"
       ignore_errors: True
 
     - name: Pre-check pool
       cli_command:
-        command: "show ipv6 local pool"
+        command: "show ipv6 "
+      with_items:
+        - "local pool"
       register: pool_pre
 
     - assert:
@@ -159,19 +161,24 @@
           - "'' in item.stdout"
         success_msg: "IPv6 pool not deployed. Continue"
         fail_msg: "IPv6 pool present."
-      with_items: 
-        - "{{ pool_pre.results }}"      
+      with_items:
+        - "{{ pool_pre.results }}"
       ignore_errors: True
 
     - name: Pre-check prefix-list
       cli_command:
-        command: "show ipv6 prefix-list"
+        command: "show ipv6 {{ item }}"
+      with_items:
+        - "prefix-list"
       register: prefix_pre
+      
     - assert:
         that:
-          - "'' in prefix_pre.stdout"
+          - "'' in item.stdout"
         success_msg: "No IPv6 Prefix-List. Continue"
         fail_msg: "IPv6 prefix list present."
+      with_items:
+        - "{{ prefix_pre.results }}"
       ignore_errors: True
 
     - name: Deploy prefix-list
@@ -179,80 +186,110 @@
         config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/3_prefix.txt') }}"
         commit: yes
 
-    - name: Post-check pool 
+    - name: Post-check pool
       cli_command:
-        command: "show ipv6 local pool"
+        command: "show ipv6 {{ item }}"
+      with_items:
+        - "local pool"
       register: pool_post
+
     - assert:
         that:
-          - "'bb1-ipv6-pool' in pool_post.stdout"
+          - "'bb1-ipv6-pool' in item.stdout"
         success_msg: "IPv6 Pool deployed. Continue"
         fail_msg: "IPv6 Pool not present."
+      with_items:
+        - "{{ pool_post.results }}"
       ignore_errors: True
 
-    - name: Post-check prefix-list 
+    - name: Post-check prefix-list
       cli_command:
-        command: "show ipv6 prefix-list"
+        command: "show ipv6 {{ item} }}"
+      with_items:
+        - "prefix-list"
       register: prefix_post
+
     - assert:
         that:
-          - "'ipv6 prefix-list V6_BB1_LAR_OUTBOUND: 3 entries' in prefix_post.stdout"
+          - "'ipv6 prefix-list V6_BB1_LAR_OUTBOUND: 3 entries' in item.stdout"
         success_msg: "IPv6 Prefix-List deployed. Continue"
         fail_msg: "IPv6 prefix list present."
+      with_items:
+        - "{{ prefix_post.results }}"
       ignore_errors: True
 
-    - name: Pre-check BGP 
+    - name: Pre-check BGP
       cli_command:
-        command: "show running-config | i address family ipv6 vrf BBONEDEFAULT"
+        command: "show running-config {{ item }}"
+      with_items:
+        - "| i address family ipv6 vrf BBONEDEFAULT"
       register: bgp_pre
+
     - assert:
         that:
-          - "'address-family ipv6 vrf BBONEDEFAULT' not in bgp_pre.stdout"
+          - "'address-family ipv6 vrf BBONEDEFAULT' not in item.stdout"
         success_msg: "IPv6 BGP not deployed. Continue"
         fail_msg: "IPv6 BGP already deployed."
+      with_items:
+        - "{{ bgp_pre.results }}"
       ignore_errors: True
 
-    - name: Deploy BGP 
+    - name: Deploy BGP
       cli_config:
         config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/4_bgp.txt') }}"
         commit: yes
 
     - name: Post-check BGP n
       cli_command:
-        command: "show running-config | i address family ipv6 vrf BBONEDEFAULT"
+        command: "show running-config {{item}}"
+      with_items:
+        - "| i address family ipv6 vrf BBONEDEFAULT"
       register: bgp_post
+
     - assert:
         that:
-          - "'address-family ipv6 vrf BBONEDEFAULT' in bgp_post.stdout"
+          - "'address-family ipv6 vrf BBONEDEFAULT' in item.stdout"
         success_msg: "IPv6 BGP deployed. Continue"
         fail_msg: "IPv6 BGP not deployed."
-      ignore_errors: True    
-
-    - name: Pre-check OSPF 
-      cli_command:
-        command: "show ospfv3 ipv6 vrf BBONEDEFAULT"
-      register: ospf_pre
-    - assert:
-        that:
-          - "'' in ospf_pre.stdout"
-        success_msg: "OSPFv3 not deployed. Continue"
-        fail_msg: "OSPFv3 already deployed."
+      with_items:
+        - "{{ bgp_post.results }}"
       ignore_errors: True
 
-    - name: Deploy OSPF 
+    - name: Pre-check OSPF
+      cli_command:
+        command: "show ospfv3 ipv6 vrf {{item}}"
+      with_items:
+        - "BBONEDEFAULT"
+      register: ospf_pre
+
+    - assert:
+        that:
+          - "'' in item.stdout"
+        success_msg: "OSPFv3 not deployed. Continue"
+        fail_msg: "OSPFv3 already deployed."
+      with_items:
+        - "{{ ospf_pre.results }}"
+      ignore_errors: True
+
+    - name: Deploy OSPF
       cli_config:
         config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/5_ospf.txt') }}"
         commit: yes
 
-    - name: Post-check OSPF 
+    - name: Post-check OSPF
       cli_command:
-        command: "show ospfv3 ipv6 vrf BBONEDEFAULT"
+        command: "show ospfv3 ipv6 vrf {{item}} "
+      with_items:
+        - "BBONEDEFAULT"
       register: ospf_post
+
     - assert:
         that:
-          - "'OSPFv3 1100 address-family ipv6 vrf BBONEDEFAULT' in ospf_post.stdout"
+          - "'OSPFv3 1100 address-family ipv6 vrf BBONEDEFAULT' in item.stdout"
         success_msg: "OSPFv3 deployed. Continue"
         fail_msg: "OSPFv3 not deployed."
+      with_items:
+        - "{{ ospf_post.results }}"
       ignore_errors: True
 
     - name: Copying running-configuration
