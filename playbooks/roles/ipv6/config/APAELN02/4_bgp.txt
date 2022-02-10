@@ -1,24 +1,24 @@
-router bgp 65212
+router bgp 65213
  address-family ipv6 vrf BBONEDEFAULT
   redistribute connected
   redistribute static
   maximum-paths ibgp 2
-  neighbor fdf8:23a0:0125:9::1 remote-as 65212
+  neighbor fdf8:23a0:0125:9::1 remote-as 65213
   neighbor fdf8:23a0:0125:9::1 description ibgp ipv6 peer to LAR01 for BB1
   neighbor fdf8:23a0:0125:9::1 version 4
   neighbor fdf8:23a0:0125:9::1 timers 3 9
   neighbor fdf8:23a0:0125:9::1 activate
   neighbor fdf8:23a0:0125:9::1 update-source Loopback1100
-    neighbor fdf8:23a0:0125:9::1 prefix-list V6_BB1_LAR_INBOUND in
+  neighbor fdf8:23a0:0125:9::1 prefix-list V6_BB1_LAR_INBOUND in
   neighbor fdf8:23a0:0125:9::1 prefix-list V6_BB1_LAR_OUTBOUND out
 
-  neighbor fdf8:23a0:0125:9::2 remote-as 65212
+  neighbor fdf8:23a0:0125:9::2 remote-as 65213
   neighbor fdf8:23a0:0125:9::2 description ibgp ipv6 peer to LAR02 for BB1
   neighbor fdf8:23a0:0125:9::2 version 4
   neighbor fdf8:23a0:0125:9::2 timers 3 9
   neighbor fdf8:23a0:0125:9::2 activate
   neighbor fdf8:23a0:0125:9::2 update-source Loopback1100
-    neighbor fdf8:23a0:0125:9::2 prefix-list V6_BB1_LAR_INBOUND in
+  neighbor fdf8:23a0:0125:9::2 prefix-list V6_BB1_LAR_INBOUND in
   neighbor fdf8:23a0:0125:9::2 prefix-list V6_BB1_LAR_OUTBOUND out
  exit-address-family
 !

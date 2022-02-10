@@ -5,7 +5,7 @@
         config: "{{ playbook_dir }}/roles/ipv6/config"
 
     - name: Create directory to store back up configuration
-      file: 
+      file:
         path: "{{ backup_directory }}"
         state: directory
 
@@ -20,7 +20,7 @@
     - name: Check IPv6 VRF config doesn't exist
       cli_command:
         command: "show vrf {{ item }}"
-      with_items: 
+      with_items:
         - "BBONEDEFAULT"
       register: vrf
 
@@ -41,7 +41,7 @@
     - name: Check VRF Config
       cli_command:
         command: "show vrf {{ item }}"
-      with_items: 
+      with_items:
         - "BBONEDEFAULT"
       register: vrf_post
 
@@ -75,7 +75,7 @@
           - "'ipv6 nd suppress-ra' not in item.stdout"
         success_msg: "No IPv6 configuration deployed on Port-Channels. Continue"
         fail_msg: "IPv6 configuration already deployed on Port-Channels"
-      with_items: 
+      with_items:
         - "{{ int_pre.results }}"
       ignore_errors: True
 
@@ -89,29 +89,68 @@
         command: "show run interface {{ item }}"
       with_items:
         - "{{int_list}}"
-      register: be_post
+      register: int_post
     - assert:
         that:
           - "'ipv6 address' in item.stdout"
           - "'ipv6 nd suppress-ra' in item.stdout"
         success_msg: "IPv6 configuration deployed on Port-Channels. Continue"
         fail_msg: "No IPv6 configuration deployed on Port-Channels"
-      with_items: 
+      with_items:
         - "{{ int_post.results }}"
+      ignore_errors: True
+
+    - name: Pre-check OSPF configuration
+      cli_command:
+        command: "show ospfv3 {{ item }}"
+      with_items:
+        - "1100"
+      register: ospf_pre
+    - assert:
+        that:
+          - "'OSPFv3: No router process 1100' in item.stdout"
+        success_msg: "OSPFv3 not deployed. Continue."
+        fail_msg: "OSPF already present"
+      with_items:
+        - "{{ ospf_pre.results }}"
+      ignore_errors: True
+
+    - name: Deploy OSPF Configuration
+      cli_config:
+        config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/6_ospf.txt') }}"
+        commit: yes
+
+    - name: Pre-check OSPF configuration
+      cli_command:
+        command: "show ospfv3 {{ item }}"
+      with_items:
+        - "1100"
+      register: ospf_post
+    - assert:
+        that:
+          - "'OSPFv3: No router process 1100' not in item.stdout"
+        success_msg: "OSPF deployed. Continue."
+        fail_msg: "OSPF not deployed"
+      with_items:
+        - "{{ ospf_post.results }}"
       ignore_errors: True
 
     - name: Pre-check prefix-list configuration
       cli_command:
-        command: "show running-config | i prefix-set"
+        command: "show running-config {{ item }}"
+      with_items:
+        - "| i prefix-set"
       register: prefix_pre
     - assert:
         that:
-          - "'V6_bb1_eu_static_range' not in prefix_pre.stdout"
-          - "'V6_bb1_eu_static_range_secondary' not in prefix_pre.stdout"
-          - "'V6_bb1_infra_subnets' not in prefix_pre.stdout"
-          - "'V6_bb1_eu_dynamic_range' not in prefix_pre.stdout"
+          - "'V6_bb1_eu_static_range' not in item.stdout"
+          - "'V6_bb1_eu_static_range_secondary' not in item.stdout"
+          - "'V6_bb1_infra_subnets' not in item.stdout"
+          - "'V6_bb1_eu_dynamic_range' not in item.stdout"
         success_msg: "Prefix-lists not deployed. Continue."
         fail_msg: "Prefix-lists already present"
+      with_items:
+        - "{{ prefix_pre.results }}"
       ignore_errors: True
 
     - name: Deploy Prefix Configuration
@@ -119,24 +158,72 @@
         config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/3_prefix.txt') }}"
         commit: yes
 
-    - name: Pre-check prefix-list configuration
+    - name: Post-check prefix-list configuration
       cli_command:
-        command: "show running-config | i prefix-set"
-      register: prefix_pre
+        command: "show running-config {{ item }}"
+      with_items:
+        - "| i prefix-set"
+      register: prefix_post
+
     - assert:
         that:
-          - "'V6_bb1_eu_static_range' in prefix_pre.stdout"
-          - "'V6_bb1_eu_static_range_secondary' in prefix_pre.stdout"
-          - "'V6_bb1_infra_subnets' in prefix_pre.stdout"
-          - "'V6_bb1_eu_dynamic_range' in prefix_pre.stdout"
+          - "'V6_bb1_eu_static_range' in item.stdout"
+          - "'V6_bb1_eu_static_range_secondary' in item.stdout"
+          - "'V6_bb1_infra_subnets' in item.stdout"
+          - "'V6_bb1_eu_dynamic_range' in item.stdout"
         success_msg: "Prefix-lists deployed. Continue"
         fail_msg: "Prefix-lists not deployed. "
+      with_items:
+        - "{{ prefix_post.results }}"
+      ignore_errors: True
+
+    - name: Pre-check route-policy configuration
+      cli_command:
+        command: "show run {{ item }}"
+      with_items:
+        - "| i V6_BB1_LNS_OUTBOUND"
+        - "| i V6_BB1_LNS_INBOUND"
+        - "| i  V6_SAR_DIRECT_INBOUND"
+      register: policy_pre
+
+    - assert:
+        that:
+          - "'' in item.stdout"
+        success_msg: "Route Policies not deployed. Continue"
+        fail_msg: "Route Policies already deployed."
+      with_items:
+        - "{{ policy_pre.results }}"
+      ignore_errors: True
+
+    - name: Deploy Route policy Configuation
+      cli_config:
+        config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/5_route_policy.txt') }}"
+        commit: yes
+
+    - name: Pre-check route-policy configuration
+      cli_command:
+        command: "show run {{ item }}"
+      with_items:
+        - "| i V6_BB1_LNS_OUTBOUND"
+        - "| i V6_BB1_LNS_INBOUND"
+        - "| i  V6_SAR_DIRECT_INBOUND"
+      register: policy_post
+
+    - assert:
+        that:
+          - "'V6_BB1_LNS_OUTBOUND' in item.stdout"
+          - "'V6_BB1_LNS_INBOUND' in item.stdout"
+          - "'V6_SAR_DIRECT_INBOUND' in item.stdout"
+        success_msg: "Route Policies  deployed. Continue"
+        fail_msg: "Route Policies not deployed."
+      with_items:
+        - "{{ policy_post.results }}"
       ignore_errors: True
 
     - name: Pre-check BGP configuration
       cli_command:
         command: "show run {{ item }}"
-      with_items: 
+      with_items:
         - "| i neighbor-group V6_BB1_LNS_PEER"
       register: bgp_pre
 
@@ -146,6 +233,8 @@
           - "'use neighbor-group V6_BB1_LNS_PEER' not in bgp_pre.stdout"
         success_msg: "BGP not deployed. Continue"
         fail_msg: "BGP already deployed."
+      with_items:
+        - "{{ bgp_pre.results }}"
       ignore_errors: True
 
     - name: Deploy BGP Configuation
@@ -153,12 +242,12 @@
         config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/4_bgp.txt') }}"
         commit: yes
 
-    - name: Pre-check BGP configuration
+    - name: Post-check BGP configuration
       cli_command:
         command: "show run {{ item }}"
-      with_items: 
+      with_items:
         - "| i neighbor-group V6_BB1_LNS_PEER"
-      register: bgp_pre
+      register: bgp_post
 
     - assert:
         that:
@@ -166,14 +255,16 @@
           - "'use neighbor-group V6_BB1_LNS_PEER' in bgp_pre.stdout"
         success_msg: "BGP deployed. Continue"
         fail_msg: "BGP not deployed."
+      with_items:
+        - "{{ bgp_post.results }}"
       ignore_errors: True
 
     - name: Copying Running Configuration
       cli_command:
        command: show running-config
       register: post_running_conf
-      msg: "Playbook complete"
+
     - copy:
        content: "{{ post_running_conf.stdout[0] }}"
        dest: "{{ backup_directory }}/{{ inventory_hostname }}_Post_Running_Config.txt"
-       
+

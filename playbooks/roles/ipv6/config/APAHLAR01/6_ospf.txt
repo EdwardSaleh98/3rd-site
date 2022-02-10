@@ -1,0 +1,17 @@
+router ospfv3 1100
+ nsr
+ !
+ vrf BBONEDEFAULT
+  router-id 192.168.111.1
+  area 0.0.0.0
+   mtu-ignore enable
+   interface Bundle-Ether88.411
+    passive enable
+   !
+   interface Bundle-Ether63.1632
+    passive enable
+   !
+   interface Loopback1100
+    passive enable
+   !
+

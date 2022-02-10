@@ -1,9 +1,9 @@
 vrf BBONEDEFAULT
  address-family ipv6 unicast
   import route-target
-   65212:1100
+   65213:1100
   !
   export route-target
-   65212:1100
+   65213:1100
   !
 

@@ -3,30 +3,14 @@ interface Loopback1100
  ipv6 nd suppress-ra
 !
 interface Bundle-Ether63.1632 
- ipv6 address fdf8:23a0:0125:0::3/127 
- ipv6 nd suppress-ra
-!
-interface Bundle-Ether53.1533 
- ipv6 address fdf8:23a0:0125:2::3/127 
+ ipv6 address fdf8:23a0:0125:0::2/127 
  ipv6 nd suppress-ra
 !
 interface Bundle-Ether88.411 
  ipv6 address fdf8:23a0:0125:5::2/127 
  ipv6 nd suppress-ra
 !
-interface Bundle-Ether321.421 
- ipv6 address fdf8:23a0:0125:7::2/127 
- ipv6 nd suppress-ra
-!
 interface Bundle-Ether30.306 
  ipv6 address fdf8:23a0:0125:4::3/127 
- ipv6 nd suppress-ra
-!
-interface Bundle-Ether103.1103 
- ipv6 address fdf8:23a0:0115:c::3/127 
- ipv6 nd suppress-ra
-!
-interface Bundle-Ether101.1100 
- ipv6 address fdf8:23a0:0125:a::2/127 
  ipv6 nd suppress-ra
 !
