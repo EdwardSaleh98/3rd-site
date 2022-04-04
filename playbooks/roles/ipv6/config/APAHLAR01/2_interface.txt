@@ -1,6 +1,5 @@
 interface Loopback1100
  ipv6 address fdf8:23a0:0125:9::1/128 
- ipv6 nd suppress-ra
 !
 interface Bundle-Ether63.1632 
  ipv6 address fdf8:23a0:0125:0::2/127 

@@ -23,12 +23,11 @@ router bgp 65213
  vrf BBONEDEFAULT
   !
   neighbor fdf8:23a0:0125:5::3 
-   remote-as 65212
+   remote-as 65213
    timers 10 30
    password 0 qwsdcfgvtszdeftg 
    description eBGP Peer to SAR01 for BB1
    address-family ipv6 unicast
-    send-community-ebgp
     route-policy V6_SAR_DIRECT_INBOUND in
     route-policy V6_SAR_DIRECT_OUTBOUND out
     soft-reconfiguration inbound always

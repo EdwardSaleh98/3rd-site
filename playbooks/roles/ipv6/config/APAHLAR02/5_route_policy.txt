@@ -1,5 +1,5 @@
 route-policy V6_BB1_LNS_OUTBOUND
-  if destination in V6_default route then
+  if destination in V6_default_route then
     pass
   endif   
 end-policy

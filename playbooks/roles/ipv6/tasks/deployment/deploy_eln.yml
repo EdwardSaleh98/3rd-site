@@ -9,15 +9,6 @@
         path: "{{ backup_directory }}"
         state: directory
 
-    - name: Copying running-configuration
-      cli_command:
-       command: show running-config
-      register: pre_running_conf
-
-    - copy:
-       content: "{{ pre_running_conf.stdout[0] }}"
-       dest: "{{ backup_directory }}/{{ inventory_hostname }}_pre_running_config.txt"
-
     - name: Pre-check VRF
       cli_command:
         command: "show vrf {{ item }}"

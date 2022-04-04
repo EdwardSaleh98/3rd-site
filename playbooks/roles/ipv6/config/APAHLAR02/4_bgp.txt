@@ -1,6 +1,6 @@
 router bgp 65213
  neighbor-group V6_BB1_LNS_PEER
-   remote-as 65213
+   remote-as 65113
    timers 3 9
    update-source Loopback1100
    address-family ipv6 unicast
@@ -24,7 +24,7 @@ router bgp 65213
  vrf BBONEDEFAULT
   !
   neighbor fdf8:23a0:0125:8::3 
-   remote-as 65213
+   remote-as 65113
    timers 10 30
    password 0 qwsdcfgvtszdeftg 
    description eBGP Peer to SAR01 for BB1

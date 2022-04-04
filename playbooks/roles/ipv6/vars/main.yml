@@ -208,7 +208,7 @@ sites:
           ip: fdf8:23a0:0125:4::2/127
         be88.422:
           ip: fdf8:23a0:0125:8::2/127
-        eu_dynamic_pools:
+      eu_dynamic_pools:
         prim_range: fdf8:23d0:2d00::/40
         sec_range1: fdf8:23d0:2c00::/40
         sec_range2: fdf8:23d0:2e00::/40

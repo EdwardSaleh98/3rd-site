@@ -22,7 +22,6 @@
           {%- set list = [] -%}
           {%- for interface in sites[inventory_hostname[0:3]][inventory_hostname]['interfaces'] -%}
           {{ list.append(interface.strip('\n'))}}
-          {%- endif -%}
           {%- endfor -%}
           {{ list }}
 
@@ -44,7 +43,7 @@
 
     - name: Deploy Interface Configuration
       cli_config:
-        config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/1_interface.txt') }}"
+        config: "{{ lookup('file', '{{ config }}/{{ inventory_hostname }}/1_interfaces.txt') }}"
         commit: yes
 
     - name: Pre-check interface configuration

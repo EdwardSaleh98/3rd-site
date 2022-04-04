@@ -59,7 +59,6 @@
           {%- set list = [] -%}
           {%- for interface in sites[inventory_hostname[0:3]][inventory_hostname]['interfaces'] -%}
           {{ list.append(interface.strip('\n'))}}
-          {%- endif -%}
           {%- endfor -%}
           {{ list }}
 
@@ -229,8 +228,8 @@
 
     - assert:
         that:
-          - "'address-family ipv6 vrf BBONEDEFAULT' not in bgp_pre.stdout"
-          - "'use neighbor-group V6_BB1_LNS_PEER' not in bgp_pre.stdout"
+          - "'address-family ipv6 vrf BBONEDEFAULT' not in item.stdout"
+          - "'use neighbor-group V6_BB1_LNS_PEER' not in item.stdout"
         success_msg: "BGP not deployed. Continue"
         fail_msg: "BGP already deployed."
       with_items:
@@ -251,8 +250,8 @@
 
     - assert:
         that:
-          - "'address-family ipv6 vrf BBONEDEFAULT' in bgp_pre.stdout"
-          - "'use neighbor-group V6_BB1_LNS_PEER' in bgp_pre.stdout"
+          - "'address-family ipv6 vrf BBONEDEFAULT' in item.stdout"
+          - "'use neighbor-group V6_BB1_LNS_PEER' in item.stdout"
         success_msg: "BGP deployed. Continue"
         fail_msg: "BGP not deployed."
       with_items:
